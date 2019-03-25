@@ -1,4 +1,5 @@
-from model import World
+from map_reader import read_map
+START_DIRECTORY = #start map
 class Camera:
     def __init__(self,width,heigth):
         self.world = World(width,heigth)
@@ -6,5 +7,5 @@ class Camera:
         self.ground = []
         self.enemy = []
         self.block = []
-    def object_in_camera(self):
+    def get_positon_displace(self):
         #return all object in camera(based on player)

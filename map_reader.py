@@ -1,3 +1,4 @@
+from model import Player,S_Enemy,Enemy,Ground,Block,Warp,World
 def find_map(directory):
     return open(directory,'r').read().split('\n')
 def read_map(directory,world):

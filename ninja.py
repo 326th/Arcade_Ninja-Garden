@@ -15,6 +15,11 @@ STAND_ENEMY = ['images/s_enemy/s_enemy0000.png',
                'images/s_enemy/s_enemy0001.png',
                'images/s_enemy/s_enemy0002.png',
                'images/s_enemy/s_enemy0003.png']
+
+WALK_ENEMY = ['images/enemy/enemy0000.png',
+               'images/enemy/enemy0001.png',
+               'images/enemy/enemy0002.png',
+               'images/enemy/enemy0003.png']
 #load sprite
 class NinjaSprite:
     DELAY = 6
@@ -69,7 +74,26 @@ class Enemy:
                 self.cycle += 1
             else:
                 self.cycle = 0    
-            
+class Walking_Enemy:
+    DELAY = 10
+    def __init__(self):
+        self.cycle = 0
+        self.delay = 0
+        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle],scale = 2)
+ 
+    def draw(self):
+        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle],scale = 2)
+        self.enemy_sprite.set_position(128,128)
+        self.enemy_sprite.draw()
+
+    def update(self):
+        self.delay += 1
+        if self.delay == Walking_Enemy.DELAY:
+            self.delay = 0
+            if self.cycle != 3:
+                self.cycle += 1
+            else:
+                self.cycle = 0
 class NinjaWindow(arcade.Window):
     def __init__(self,width,height):
         super().__init__(width,height)
@@ -80,16 +104,18 @@ class NinjaWindow(arcade.Window):
         self.ninja = NinjaSprite()
         self.block = BlockSprite()
         self.enemy = Enemy()
-        
+        self.w_enemy = Walking_Enemy()
     def on_draw(self):
         arcade.start_render()
 
         self.ninja.draw()
         self.block.draw([(0,64),(64,64),(128,64),(192,64)],[(0,0),(64,0),(128,0),(192,0)])
         self.enemy.draw()
+        self.w_enemy.draw()
     def update(self, delta):
         self.ninja.update()
         self.enemy.update()
+        self.w_enemy.update()
 def main():
     window = NinjaWindow(SCREEN_WIDTH,SCREEN_HEIGHT)
     arcade.set_window(window)

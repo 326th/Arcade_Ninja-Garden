@@ -1,5 +1,4 @@
 from map_reader import read_map
-START_DIRECTORY = #start map
 class Player:
     GRAVITY = 1
     JUMP_SPEED = 15
