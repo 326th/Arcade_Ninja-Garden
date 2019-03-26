@@ -42,18 +42,16 @@ class Enemy:
         #move back and forth
 class Ground:
     GROUND_SIZE = 32
-    def __init__(self,world,x,y,number):
+    def __init__(self,world,x,y):
         self.world = world
         self.x = range(x - GROUND_SIZE, x + GROUND_SIZE)
         self.y = range(y - GROUND_SIZE, y + GROUND_SIZE)
-        self.number = number
 class Block:
     BLOCK_SIZE = 32
-    def __init__(self,world,x,y,number):
+    def __init__(self,world,x,y):
         self.world = world
         self.x = range(x - BLOCK_SIZE, x + GROUND_SIZE)
         self.y = range(y - BLOCK_SIZE, y + GROUND_SIZE)
-        self.number = number
 class Warp:
     def __init__(self,world,x,y,width,heigth,mapdirectory):
         self.world = world
@@ -68,7 +66,9 @@ class World:
     def __init__(self,width,heigth):
         self.width = width
         self.height = height
-        read_map(START_DIRECTORY)
+        self.block = []
+        self.ground = []
+        self.enemy = []
     def update(self,delta):
         #update
     def warp(self,directory):
@@ -77,4 +77,13 @@ class World:
         #clear everything in world then load new world
         #remove loading screen
     def on_key_press(self, key, key_modifiers):
-        
+        #
+    def create_player(self,x,y):
+        self.player = Player(self,x,y)
+    def create_block(self,x,y):
+        self.block.append(Block(self,x,y))
+    def create_ground(self,x,y):
+        self.ground.append(Ground(self,x,y))
+    def create_s_enemy(self,x,y):
+        sef.enemy.append(S_Enemy(self,x,y))
+    

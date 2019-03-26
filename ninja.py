@@ -54,7 +54,7 @@ class BlockSprite:
             self.ground_sprite.set_position(ground[0],ground[1]) #replace with ground.x,ground.y
             self.ground_sprite.draw()
 
-class Enemy:
+class S_Enemy:
     DELAY = 10
     def __init__(self):
         self.cycle = 0
@@ -68,13 +68,13 @@ class Enemy:
 
     def update(self):
         self.delay += 1
-        if self.delay == Enemy.DELAY:
+        if self.delay == S_Enemy.DELAY:
             self.delay = 0
             if self.cycle != 3:
                 self.cycle += 1
             else:
                 self.cycle = 0    
-class Walking_Enemy:
+class Enemy:
     DELAY = 10
     def __init__(self):
         self.cycle = 0
@@ -88,7 +88,7 @@ class Walking_Enemy:
 
     def update(self):
         self.delay += 1
-        if self.delay == Walking_Enemy.DELAY:
+        if self.delay == Enemy.DELAY:
             self.delay = 0
             if self.cycle != 3:
                 self.cycle += 1
@@ -110,12 +110,12 @@ class NinjaWindow(arcade.Window):
 
         self.ninja.draw()
         self.block.draw([(0,64),(64,64),(128,64),(192,64)],[(0,0),(64,0),(128,0),(192,0)])
+        self.s_enemy.draw()
         self.enemy.draw()
-        self.w_enemy.draw()
     def update(self, delta):
         self.ninja.update()
+        self.s_enemy.update()
         self.enemy.update()
-        self.w_enemy.update()
 def main():
     window = NinjaWindow(SCREEN_WIDTH,SCREEN_HEIGHT)
     arcade.set_window(window)
