@@ -1,0 +1,5 @@
+Enemy,4,0,1
+S_Enemy,1,2
+OOOOOO
+MXPOOO
+MMMMMM
