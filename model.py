@@ -85,4 +85,3 @@ class World:
         self.s_enemy.append(S_Enemy(self,x,y))
     def create_enemy(self,start_x,end_x,y):
         self.enemy.append(Enemy(self,start_x,end_x,y))
-    

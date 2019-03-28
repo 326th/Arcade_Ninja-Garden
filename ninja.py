@@ -1,7 +1,9 @@
 import arcade
 from camera import Camera
-SCREEN_WIDTH = 32 * (25)
-SCREEN_HEIGHT = 32 * (19)
+SCALE = 1
+UNIT_SIZE = 32
+SCREEN_WIDTH = UNIT_SIZE * (25)
+SCREEN_HEIGHT = UNIT_SIZE * (19)
 STAND_NINJA = ['images/ninja/Idle0000.png',
                'images/ninja/Idle0001.png',
                'images/ninja/Idle0002.png',
@@ -26,10 +28,10 @@ class NinjaSprite:
     def __init__(self):
         self.cycle = 0
         self.delay = 0
-        self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle],scale = 2)
+        self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle],scale = SCALE)
  
     def draw(self,x,y):
-        self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle],scale = 2)
+        self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle],scale = SCALE)
         self.ninja_sprite.set_position(x,y)
         self.ninja_sprite.draw()
 
@@ -44,8 +46,8 @@ class NinjaSprite:
         
 class BlockSprite:
     def __init__(self):
-        self.block_sprite = arcade.Sprite('images/block/block0000.png',scale = 2)
-        self.ground_sprite = arcade.Sprite('images/dirt/Dirt0000.png',scale = 2)
+        self.block_sprite = arcade.Sprite('images/block/block0000.png',scale = SCALE)
+        self.ground_sprite = arcade.Sprite('images/dirt/Dirt0000.png',scale = SCALE)
     def draw(self,block_lst,ground_lst):
         for block in block_lst:
             self.block_sprite.set_position(block.x,block.y) #replace with block.x,block.y
@@ -59,10 +61,10 @@ class S_Enemy:
     def __init__(self):
         self.cycle = 0
         self.delay = 0
-        self.enemy_sprite = arcade.Sprite(STAND_ENEMY[self.cycle],scale = 2)
+        self.enemy_sprite = arcade.Sprite(STAND_ENEMY[self.cycle],scale = SCALE)
  
     def draw(self,x,y):
-        self.enemy_sprite = arcade.Sprite(STAND_ENEMY[self.cycle],scale = 2)
+        self.enemy_sprite = arcade.Sprite(STAND_ENEMY[self.cycle],scale = SCALE)
         self.enemy_sprite.set_position(x,y)
         self.enemy_sprite.draw()
 
@@ -79,10 +81,10 @@ class Enemy:
     def __init__(self):
         self.cycle = 0
         self.delay = 0
-        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle],scale = 2)
+        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle],scale = SCALE)
  
     def draw(self,x,y):
-        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle],scale = 2)
+        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle],scale = SCALE)
         self.enemy_sprite.set_position(x,y)
         self.enemy_sprite.draw()
 
@@ -99,7 +101,7 @@ class NinjaWindow(arcade.Window):
         super().__init__(width,height)
 
         arcade.set_background_color(arcade.color.WHITE)
-        self.camera = Camera(SCREEN_WIDTH,SCREEN_HEIGHT)
+        self.camera = Camera(SCREEN_WIDTH,SCREEN_HEIGHT,UNIT_SIZE*SCALE)
         
         self.ninja = NinjaSprite()
         self.block = BlockSprite()
@@ -125,3 +127,4 @@ def main():
 
 if __name__== '__main__':
     main()
+    
