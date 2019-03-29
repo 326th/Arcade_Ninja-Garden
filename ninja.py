@@ -4,6 +4,8 @@ SCALE = 1
 UNIT_SIZE = 32
 SCREEN_WIDTH = UNIT_SIZE * (25)
 SCREEN_HEIGHT = UNIT_SIZE * (19)
+SCREEN_WIDTH = 32 * (25)
+SCREEN_HEIGHT = 32 * (19)
 STAND_NINJA = ['images/ninja/Idle0000.png',
                'images/ninja/Idle0001.png',
                'images/ninja/Idle0002.png',
@@ -101,12 +103,14 @@ class NinjaWindow(arcade.Window):
         super().__init__(width,height)
 
         arcade.set_background_color(arcade.color.WHITE)
-        self.camera = Camera(SCREEN_WIDTH,SCREEN_HEIGHT,UNIT_SIZE*SCALE)
+        self.camera = Camera(UNIT_SIZE*SCALE)
         
         self.ninja = NinjaSprite()
-        self.block = BlockSprite()
         self.enemy = Enemy()
         self.s_enemy = S_Enemy()
+        self.block = BlockSprite()
+
+
     def on_draw(self):
         arcade.start_render()
 
@@ -120,11 +124,15 @@ class NinjaWindow(arcade.Window):
         self.ninja.update()
         self.s_enemy.update()
         self.enemy.update()
+        self.camera.update(delta)
+    def on_key_press(self,key,key_modifiers):
+        self.camera.on_key_press(key,key_modifiers)
+    def on_key_release(self,key,key_modifiers):
+        self.camera.on_key_release(key,key_modifiers)
 def main():
     window = NinjaWindow(SCREEN_WIDTH,SCREEN_HEIGHT)
     arcade.set_window(window)
     arcade.run()
-
 if __name__== '__main__':
     main()
     

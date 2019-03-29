@@ -1,10 +1,10 @@
 import model
 def find_map(directory):
     return list(reversed(open(directory,'r').read().split('\n')))
-def read_map(directory,width,height,unit_size):
+def read_map(directory,unit_size):
     half_size = unit_size / 2
     lst = find_map(directory)
-    world = model.World(width,height)
+    world = model.World()
     for string in range(len(lst)):
         line = lst[string]
         y =  int(((string-1)*unit_size) + half_size)
