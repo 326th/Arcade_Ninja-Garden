@@ -4,7 +4,7 @@ def find_map(directory):
 def read_map(directory,unit_size):
     half_size = unit_size / 2
     lst = find_map(directory)
-    world = model.World()
+    world = model.World(unit_size)
     for string in range(len(lst)):
         line = lst[string]
         y =  int(((string-1)*unit_size) + half_size)

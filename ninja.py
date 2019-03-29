@@ -1,6 +1,6 @@
 import arcade
 from camera import Camera
-SCALE = 1
+SCALE = 1.5
 UNIT_SIZE = 32
 SCREEN_WIDTH = UNIT_SIZE * (25)
 SCREEN_HEIGHT = UNIT_SIZE * (19)
@@ -101,7 +101,7 @@ class Enemy:
 class NinjaWindow(arcade.Window):
     def __init__(self,width,height):
         super().__init__(width,height)
-
+ 
         arcade.set_background_color(arcade.color.WHITE)
         self.camera = Camera(UNIT_SIZE*SCALE)
         

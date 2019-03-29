@@ -1,4 +1,3 @@
-from map_reader import read_map
 import arcade.key
 class Player:
     GRAVITY = -1
@@ -6,7 +5,7 @@ class Player:
     DASH_ACC = 2
     FRICTION = 1
     MAX_X = 10
-    MAX_Y = 10
+    MAX_Y = 20
     def __init__(self,world,x,y):
         self.world = world
         self.x = x
@@ -31,15 +30,21 @@ class Player:
                 self.vx += Player.FRICTION
                 if self.vx>0:
                     self.vx = 0
-        
+        self.vy += Player.GRAVITY
         if self.vx > Player.MAX_X:
             self.vx = Player.MAX_X
         elif self.vx < -Player.MAX_X:
             self.vx = -Player.MAX_X
+        if self.vy > Player.MAX_Y:
+            self.vy = Player.MAX_Y
+        elif self.vy < -Player.MAX_Y:
+            self.vy = -Player.MAX_Y
         self.x += self.vx
         self.y += self.vy
-##    def jump(self):
-##        self.vy = Player.JUMP_SPEED
+        if self.y < 128:
+            self.y = 128
+    def jump(self):
+        self.vy = Player.JUMP_SPEED
 ##    def slash(self,direction):
 ##        #hit all enemy in path
 ##    def die(self):
@@ -83,14 +88,14 @@ class Block:
 ##    def warp(self):
 ##        self.world.warp(self.directory)
 class World:
-    def __init__(self):
+    def __init__(self,unit_size):
+        self.unit_size = unit_size
         self.block = []
         self.ground = []
         self.s_enemy = []
         self.enemy = []
         self.hold_LEFT = False
         self.hold_RIGHT = False
-        self.hold_UP = False
     def update(self,delta):
         self.player.update(delta)
 ##    def warp(self,directory):
@@ -104,14 +109,12 @@ class World:
         if key == arcade.key.RIGHT:
             self.hold_RIGHT = True
         if key == arcade.key.UP:
-            self.hold_UP = True
+            self.player.jump()
     def on_key_release(self,key,key_modifiers):
         if key == arcade.key.LEFT:
             self.hold_LEFT = False
         if key == arcade.key.RIGHT:
             self.hold_RIGHT = False
-        if key == arcade.key.UP:
-            self.hold_UP = False
     def create_player(self,x,y):
         self.player = Player(self,x,y)
     def create_block(self,x,y):
