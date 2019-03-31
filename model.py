@@ -1,4 +1,5 @@
 import arcade.key
+from collision_detection import ground_detect_x
 class Player:
     GRAVITY = -1
     JUMP_SPEED = 15
@@ -13,6 +14,7 @@ class Player:
         self.vx = 2
         self.vy = 0
     def update(self,delta):
+        print(self.x,self.y)
         if self.world.hold_RIGHT == True:
             if self.vx <0:
                 self.vx = -self.vx
@@ -39,10 +41,13 @@ class Player:
             self.vy = Player.MAX_Y
         elif self.vy < -Player.MAX_Y:
             self.vy = -Player.MAX_Y
-        self.x += self.vx
+        self.x, stop =  ground_detect_x(self,self.world.get_ground_at_player(),self.world.unit_size)
+        if stop:
+            self.vx = 0
+##        self.x += self.vx
         self.y += self.vy
-        if self.y < 128:
-            self.y = 128
+        if self.y < 96:
+            self.y = 96
     def jump(self):
         self.vy = Player.JUMP_SPEED
 ##    def slash(self,direction):
@@ -115,6 +120,12 @@ class World:
             self.hold_LEFT = False
         if key == arcade.key.RIGHT:
             self.hold_RIGHT = False
+    def get_ground_at_player(self):
+        g = []
+        for ground in self.ground:
+            if (ground.y - (self.unit_size) < self.player.y < ground.y + (self.unit_size)):
+                g.append(ground)
+        return g
     def create_player(self,x,y):
         self.player = Player(self,x,y)
     def create_block(self,x,y):

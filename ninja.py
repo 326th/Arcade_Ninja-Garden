@@ -125,6 +125,7 @@ class NinjaWindow(arcade.Window):
         self.s_enemy.update()
         self.enemy.update()
         self.camera.update(delta)
+##        print(self.camera.world.player.x,self.camera.world.player.y)
     def on_key_press(self,key,key_modifiers):
         self.camera.on_key_press(key,key_modifiers)
     def on_key_release(self,key,key_modifiers):
