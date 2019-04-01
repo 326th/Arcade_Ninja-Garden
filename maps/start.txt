@@ -1,4 +1,4 @@
-Enemy,4,0,1
+Enemy,0,4,1
 S_Enemy,1,2
 Player,3,3
 MOOOX

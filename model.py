@@ -1,5 +1,5 @@
 import arcade.key
-from collision_detection import ground_detect_x
+from collision_detection import new_pos_x, new_pos_y
 class Player:
     GRAVITY = -1
     JUMP_SPEED = 15
@@ -14,7 +14,6 @@ class Player:
         self.vx = 2
         self.vy = 0
     def update(self,delta):
-        print(self.x,self.y)
         if self.world.hold_RIGHT == True:
             if self.vx <0:
                 self.vx = -self.vx
@@ -41,13 +40,12 @@ class Player:
             self.vy = Player.MAX_Y
         elif self.vy < -Player.MAX_Y:
             self.vy = -Player.MAX_Y
-        self.x, stop =  ground_detect_x(self,self.world.get_ground_at_player(),self.world.unit_size)
-        if stop:
+        self.x, stop_x =  new_pos_x(self,self.world.get_ground_at_player_same_y(),self.world.unit_size)
+        if stop_x:
             self.vx = 0
-##        self.x += self.vx
-        self.y += self.vy
-        if self.y < 96:
-            self.y = 96
+        self.y, stop_y =  new_pos_y(self,self.world.get_ground_at_player_same_x(),self.world.unit_size)
+        if stop_y:
+            self.vy = 0
     def jump(self):
         self.vy = Player.JUMP_SPEED
 ##    def slash(self,direction):
@@ -59,19 +57,25 @@ class S_Enemy:
         self.world = world
         self.x = x
         self.y = y
-##    def hit(self):
-##        #die
+    def hit(self):
+        self.world.s_enemy.remove(self)
 class Enemy:
+    MOVE_SPEED = 3
     def __init__(self,world,start_x,end_x,y):
         self.world = world
         self.x = start_x
         self.start_x = start_x
         self.end_x = end_x
         self.y = y
-##    def hit(self):
-##        #die
-##    def update(self):
-##        #move back and forth
+        self.face_right = -1 #1 right, -1 left
+    def hit(self):
+        self.world.enemy.remove(self)
+    def update(self,delta):
+        if self.face_right == 1 and self.x >= self.end_x:
+            self.face_right = -1
+        if self.face_right == -1 and self.x <= self.start_x:
+            self.face_right = 1
+        self.x += Enemy.MOVE_SPEED * self.face_right
 class Ground:
     def __init__(self,world,x,y):
         self.world = world
@@ -99,10 +103,13 @@ class World:
         self.ground = []
         self.s_enemy = []
         self.enemy = []
+        self.player = None
         self.hold_LEFT = False
         self.hold_RIGHT = False
     def update(self,delta):
         self.player.update(delta)
+        for enemy in self.enemy:
+            enemy.update(delta)
 ##    def warp(self,directory):
 ##        #stop update world
 ##        #loading screen
@@ -120,10 +127,16 @@ class World:
             self.hold_LEFT = False
         if key == arcade.key.RIGHT:
             self.hold_RIGHT = False
-    def get_ground_at_player(self):
+    def get_ground_at_player_same_y(self):
         g = []
         for ground in self.ground:
             if (ground.y - (self.unit_size) < self.player.y < ground.y + (self.unit_size)):
+                g.append(ground)
+        return g
+    def get_ground_at_player_same_x(self):
+        g = []
+        for ground in self.ground:
+            if (ground.x - (self.unit_size) < self.player.x < ground.x + (self.unit_size)):
                 g.append(ground)
         return g
     def create_player(self,x,y):
