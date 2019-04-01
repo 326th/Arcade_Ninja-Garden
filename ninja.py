@@ -50,12 +50,12 @@ class BlockSprite:
     def __init__(self):
         self.block_sprite = arcade.Sprite('images/block/block0000.png',scale = SCALE)
         self.ground_sprite = arcade.Sprite('images/dirt/Dirt0000.png',scale = SCALE)
-    def draw(self,block_lst,ground_lst):
+    def draw(self,block_lst,ground_lst,displace_x,displace_y):
         for block in block_lst:
-            self.block_sprite.set_position(block.x,block.y) #replace with block.x,block.y
+            self.block_sprite.set_position(block.x+displace_x,block.y+displace_y)
             self.block_sprite.draw()
         for ground in ground_lst:
-            self.ground_sprite.set_position(ground.x,ground.y) #replace with ground.x,ground.y
+            self.ground_sprite.set_position(ground.x+displace_x,ground.y+displace_y)
             self.ground_sprite.draw()
 
 class S_Enemy:
@@ -103,22 +103,22 @@ class NinjaWindow(arcade.Window):
         super().__init__(width,height)
  
         arcade.set_background_color(arcade.color.WHITE)
-        self.camera = Camera(UNIT_SIZE*SCALE)
-        
-        self.ninja = NinjaSprite()
+        self.camera = Camera(UNIT_SIZE*SCALE,SCALE)
+
         self.enemy = Enemy()
         self.s_enemy = S_Enemy()
         self.block = BlockSprite()
+        self.ninja = NinjaSprite()
 
     def on_draw(self):
         arcade.start_render()
-
-        self.ninja.draw(self.camera.world.player.x,self.camera.world.player.y)
-        self.block.draw(self.camera.world.block,self.camera.world.ground)
+        x,y = self.camera.get_positon_displace()
+        self.ninja.draw(self.camera.world.player.x+x,self.camera.world.player.y+y)
+        self.block.draw(self.camera.world.block,self.camera.world.ground,x,y)
         for still_enemy in self.camera.world.s_enemy:
-            self.s_enemy.draw(still_enemy.x,still_enemy.y)
+            self.s_enemy.draw(still_enemy.x+x,still_enemy.y+y)
         for walking_enemy in self.camera.world.enemy:
-            self.enemy.draw(walking_enemy.x,walking_enemy.y)
+            self.enemy.draw(walking_enemy.x+x,walking_enemy.y+y)
     def update(self, delta):
         self.ninja.update()
         self.s_enemy.update()

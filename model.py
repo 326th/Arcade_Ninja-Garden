@@ -1,19 +1,30 @@
 import arcade.key
 from collision_detection import new_pos_x, new_pos_y
 class Player:
-    GRAVITY = -1
-    JUMP_SPEED = 15
-    DASH_ACC = 2
-    FRICTION = 1
-    MAX_X = 10
+    MAX_X = 5
     MAX_Y = 20
+    GRAVITY = -0.5
+    JUMP_SPEED = 12
+    DASH_ACC = 1
+    FRICTION = MAX_X/5
+    MAX_STOP_CHARGE = 15
     def __init__(self,world,x,y):
+        self.stop_charge = Player.MAX_STOP_CHARGE
         self.world = world
         self.x = x
         self.y = y
         self.vx = 2
         self.vy = 0
+        Player.GRAVITY = (Player.GRAVITY * self.world.scale)//1
+        Player.JUMP_SPEED = (Player.JUMP_SPEED * self.world.scale)//1
+        Player.DASH_ACC = (Player.DASH_ACC * self.world.scale)//1
+        Player.FRICTION = (Player.FRICTION * self.world.scale)//1
+        Player.MAX_X = (Player.MAX_X * self.world.scale)//1
+        Player.MAX_Y = (Player.MAX_Y * self.world.scale)//1
     def update(self,delta):
+        if self.stop_charge >0:
+            self.stop_charge -= 1
+            return
         if self.world.hold_RIGHT == True:
             if self.vx <0:
                 self.vx = -self.vx
@@ -48,8 +59,8 @@ class Player:
             self.vy = 0
     def jump(self):
         self.vy = Player.JUMP_SPEED
-##    def slash(self,direction):
-##        #hit all enemy in path
+##    def slash(self,direction): #direction is [x,y]
+##        self.vx = 
 ##    def die(self):
 ##        #respawn`
 class S_Enemy:
@@ -97,7 +108,8 @@ class Block:
 ##    def warp(self):
 ##        self.world.warp(self.directory)
 class World:
-    def __init__(self,unit_size):
+    def __init__(self,unit_size,scale):
+        self.scale = scale
         self.unit_size = unit_size
         self.block = []
         self.ground = []
