@@ -59,8 +59,24 @@ class Player:
             self.vy = 0
     def jump(self):
         self.vy = Player.JUMP_SPEED
-##    def slash(self,direction): #direction is [x,y]
-##        self.vx = 
+    def slash(self,direction): #direction is [x,y]
+        DASH_RANGE = (4*self.world.unit_size) + 20
+        if direction == [0,1]:
+            ground = self.world.get_ground_at_player_same_x()
+            new_y = self.y + DASH_RANGE
+            for g in ground:
+                if (self.y < g.y < self.y + DASH_RANGE):
+                    if g.y < new_y:
+                        new_y = g.y
+            self.stop_charge = Player.MAX_STOP_CHARGE
+            killable = self.world.enemy + self.world.s_enemy + self.world.block
+            for target in killable:
+                if (target.x - (self.world.unit_size) < self.x < target.x + (self.world.unit_size)):
+                    if (self.y < target.y < new_y - self.world.unit_size):
+                       target.die()
+            self.y = new_y - self.world.unit_size 
+        self.vx = 0
+        self.vy = 0
 ##    def die(self):
 ##        #respawn`
 class S_Enemy:
@@ -68,7 +84,7 @@ class S_Enemy:
         self.world = world
         self.x = x
         self.y = y
-    def hit(self):
+    def die(self):
         self.world.s_enemy.remove(self)
 class Enemy:
     MOVE_SPEED = 3
@@ -79,7 +95,7 @@ class Enemy:
         self.end_x = end_x
         self.y = y
         self.face_right = -1 #1 right, -1 left
-    def hit(self):
+    def die(self):
         self.world.enemy.remove(self)
     def update(self,delta):
         if self.face_right == 1 and self.x >= self.end_x:
@@ -97,6 +113,8 @@ class Block:
         self.world = world
         self.x = x
         self.y = y
+    def die(self):
+        self.world.block.remove(self)
 ##class Warp:
 ##    def __init__(self,world,x,y,width,heigth,mapdirectory):
 ##        self.world = world
@@ -134,6 +152,8 @@ class World:
             self.hold_RIGHT = True
         if key == arcade.key.UP:
             self.player.jump()
+        if key == arcade.key.W:
+            self.player.slash([0,1])
     def on_key_release(self,key,key_modifiers):
         if key == arcade.key.LEFT:
             self.hold_LEFT = False
@@ -141,13 +161,13 @@ class World:
             self.hold_RIGHT = False
     def get_ground_at_player_same_y(self):
         g = []
-        for ground in self.ground:
+        for ground in self.ground+self.block:
             if (ground.y - (self.unit_size) < self.player.y < ground.y + (self.unit_size)):
                 g.append(ground)
         return g
     def get_ground_at_player_same_x(self):
         g = []
-        for ground in self.ground:
+        for ground in self.ground+self.block:
             if (ground.x - (self.unit_size) < self.player.x < ground.x + (self.unit_size)):
                 g.append(ground)
         return g
