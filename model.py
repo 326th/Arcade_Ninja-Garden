@@ -62,7 +62,7 @@ class Player:
     def slash(self,direction): #direction is [x,y]
         DASH_RANGE = (4*self.world.unit_size) + 20
         if direction == [0,1]:
-            ground = self.world.get_ground_at_player_same_x()
+            ground = self.world.get_only_ground_at_player_same_x()
             new_y = self.y + DASH_RANGE
             for g in ground:
                 if (self.y < g.y < self.y + DASH_RANGE):
@@ -72,9 +72,51 @@ class Player:
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.x - (self.world.unit_size) < self.x < target.x + (self.world.unit_size)):
-                    if (self.y < target.y < new_y - self.world.unit_size):
+                    if (self.y - ((self.world.unit_size/2)//1) < target.y < new_y - ((self.world.unit_size/2)//1)):
                        target.die()
-            self.y = new_y - self.world.unit_size 
+            self.y = new_y - self.world.unit_size
+        if direction == [0,-1]:
+            ground = self.world.get_only_ground_at_player_same_x()
+            new_y = self.y - DASH_RANGE
+            for g in ground:
+                if (self.y > g.y > self.y - DASH_RANGE):
+                    if g.y > new_y:
+                        new_y = g.y
+            self.stop_charge = Player.MAX_STOP_CHARGE
+            killable = self.world.enemy + self.world.s_enemy + self.world.block
+            for target in killable:
+                if (target.x - (self.world.unit_size) < self.x < target.x + (self.world.unit_size)):
+                    if (self.y + ((self.world.unit_size/2)//1) > target.y > new_y + ((self.world.unit_size/2)//1)):
+                       target.die()
+            self.y = new_y + self.world.unit_size
+        if direction == [1,0]:
+            ground = self.world.get_only_ground_at_player_same_y()
+            new_x = self.x + DASH_RANGE
+            for g in ground:
+                if (self.x < g.x < self.x + DASH_RANGE):
+                    if g.x < new_x:
+                        new_x = g.x
+            self.stop_charge = Player.MAX_STOP_CHARGE
+            killable = self.world.enemy + self.world.s_enemy + self.world.block
+            for target in killable:
+                if (target.y - (self.world.unit_size) < self.y < target.y + (self.world.unit_size)):
+                    if (self.x - ((self.world.unit_size/2)//1) < target.x < new_x - ((self.world.unit_size/2)//1)):
+                       target.die()
+            self.x = new_x - self.world.unit_size
+        if direction == [-1,0]:
+            ground = self.world.get_only_ground_at_player_same_y()
+            new_x = self.x - DASH_RANGE
+            for g in ground:
+                if (self.x > g.x > self.x - DASH_RANGE):
+                    if g.x > new_x:
+                        new_x = g.x
+            self.stop_charge = Player.MAX_STOP_CHARGE
+            killable = self.world.enemy + self.world.s_enemy + self.world.block
+            for target in killable:
+                if (target.y - (self.world.unit_size) < self.y < target.y + (self.world.unit_size)):
+                    if (self.x + ((self.world.unit_size/2)//1) > target.x > new_x + ((self.world.unit_size/2)//1)):
+                       target.die()
+            self.x = new_x + self.world.unit_size
         self.vx = 0
         self.vy = 0
 ##    def die(self):
@@ -154,11 +196,29 @@ class World:
             self.player.jump()
         if key == arcade.key.W:
             self.player.slash([0,1])
+        if key == arcade.key.S:
+            self.player.slash([0,-1])
+        if key == arcade.key.D:
+            self.player.slash([1,0])
+        if key == arcade.key.A:
+            self.player.slash([-1,0])
     def on_key_release(self,key,key_modifiers):
         if key == arcade.key.LEFT:
             self.hold_LEFT = False
         if key == arcade.key.RIGHT:
             self.hold_RIGHT = False
+    def get_only_ground_at_player_same_y(self):
+        g = []
+        for ground in self.ground:
+            if (ground.y - (self.unit_size) < self.player.y < ground.y + (self.unit_size)):
+                g.append(ground)
+        return g
+    def get_only_ground_at_player_same_x(self):
+        g = []
+        for ground in self.ground:
+            if (ground.x - (self.unit_size) < self.player.x < ground.x + (self.unit_size)):
+                g.append(ground)
+        return g
     def get_ground_at_player_same_y(self):
         g = []
         for ground in self.ground+self.block:

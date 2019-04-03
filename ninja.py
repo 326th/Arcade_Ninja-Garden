@@ -112,7 +112,8 @@ class NinjaWindow(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
-        x,y = self.camera.get_positon_displace()
+        self.camera.get_positon_displace()
+        x,y = self.camera.displace_x,self.camera.displace_y
         self.ninja.draw(self.camera.world.player.x+x,self.camera.world.player.y+y)
         self.block.draw(self.camera.world.block,self.camera.world.ground,x,y)
         for still_enemy in self.camera.world.s_enemy:
