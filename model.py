@@ -7,8 +7,9 @@ class Player:
     JUMP_SPEED = 12
     DASH_ACC = 1
     FRICTION = MAX_X/5
-    MAX_STOP_CHARGE = 15
+    MAX_STOP_CHARGE = 20
     def __init__(self,world,x,y):
+        self.jump_charge = 0
         self.stop_charge = Player.MAX_STOP_CHARGE
         self.world = world
         self.x = x
@@ -25,6 +26,15 @@ class Player:
         if self.stop_charge >0:
             self.stop_charge -= 1
             return
+        on_air = False
+        for g in self.world.ground + self.world.block:
+            if (g.x-(self.world.unit_size//2)< self.x < g.x+(self.world.unit_size//2)) and self.y == g.y + self.world.unit_size:
+                if self.jump_charge == 0:
+                    self.jump_charge = 2
+                on_air = True
+        if on_air:
+            if self.jump_charge == 2:
+                    self.jump_charge = 1
         if self.world.hold_RIGHT == True:
             if self.vx <0:
                 self.vx = -self.vx
@@ -58,8 +68,12 @@ class Player:
         if stop_y:
             self.vy = 0
     def jump(self):
-        self.vy = Player.JUMP_SPEED
-    def slash(self,direction): #direction is [x,y]
+        if self.jump_charge > 0:
+            self.jump_charge -= 1
+            self.vy = Player.JUMP_SPEED
+    def slash(self,direction):
+        if self.stop_charge >0:
+            return
         DASH_RANGE = (4*self.world.unit_size) + 20
         if direction == [0,1]:
             ground = self.world.get_only_ground_at_player_same_x()

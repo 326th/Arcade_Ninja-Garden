@@ -27,7 +27,8 @@ WALK_ENEMY = ['images/enemy/enemy0000.png',
 #load sprite
 class NinjaSprite:
     DELAY = 6
-    def __init__(self):
+    def __init__(self,game):
+        self.game = game
         self.cycle = 0
         self.delay = 0
         self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle],scale = SCALE)
@@ -38,6 +39,8 @@ class NinjaSprite:
         self.ninja_sprite.draw()
 
     def update(self):
+        if self.game.camera.world.player.stop_charge > 0:
+            return
         self.delay += 1
         if self.delay == NinjaSprite.DELAY:
             self.delay = 0
@@ -47,7 +50,8 @@ class NinjaSprite:
                 self.cycle = 0
         
 class BlockSprite:
-    def __init__(self):
+    def __init__(self,game):
+        self.game = game
         self.block_sprite = arcade.Sprite('images/block/block0000.png',scale = SCALE)
         self.ground_sprite = arcade.Sprite('images/dirt/Dirt0000.png',scale = SCALE)
     def draw(self,block_lst,ground_lst,displace_x,displace_y):
@@ -60,7 +64,8 @@ class BlockSprite:
 
 class S_Enemy:
     DELAY = 10
-    def __init__(self):
+    def __init__(self,game):
+        self.game = game
         self.cycle = 0
         self.delay = 0
         self.enemy_sprite = arcade.Sprite(STAND_ENEMY[self.cycle],scale = SCALE)
@@ -80,7 +85,8 @@ class S_Enemy:
                 self.cycle = 0    
 class Enemy:
     DELAY = 10
-    def __init__(self):
+    def __init__(self,game):
+        self.game = game
         self.cycle = 0
         self.delay = 0
         self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle],scale = SCALE)
@@ -105,10 +111,10 @@ class NinjaWindow(arcade.Window):
         arcade.set_background_color(arcade.color.WHITE)
         self.camera = Camera(UNIT_SIZE*SCALE,SCALE)
 
-        self.enemy = Enemy()
-        self.s_enemy = S_Enemy()
-        self.block = BlockSprite()
-        self.ninja = NinjaSprite()
+        self.enemy = Enemy(self)
+        self.s_enemy = S_Enemy(self)
+        self.block = BlockSprite(self)
+        self.ninja = NinjaSprite(self)
 
     def on_draw(self):
         arcade.start_render()
