@@ -1,7 +1,7 @@
 import arcade.key
 from collision_detection import new_pos_x, new_pos_y
 class Player:
-    MAX_X = 5
+    MAX_X = 6
     MAX_Y = 20
     GRAVITY = -0.5
     JUMP_SPEED = 12
@@ -14,7 +14,7 @@ class Player:
         self.world = world
         self.x = x
         self.y = y
-        self.vx = 2
+        self.vx = 0
         self.vy = 0
         self.right = 0
         Player.GRAVITY = (Player.GRAVITY * self.world.scale)//1

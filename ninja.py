@@ -23,6 +23,15 @@ STAND_NINJA = ['images/ninja/Idle0000.png',
                'images/ninja/Idle_flip0006.png',
                'images/ninja/Idle_flip0007.png']
 
+RUN_NINJA = ['images/ninja/run0000.png',
+               'images/ninja/run0001.png',
+               'images/ninja/run0002.png',
+               'images/ninja/run0003.png',
+               'images/ninja/run_flip0000.png',
+               'images/ninja/run_flip0001.png',
+               'images/ninja/run_flip0002.png',
+               'images/ninja/run_flip0003.png']
+
 STAND_ENEMY = ['images/s_enemy/s_enemy0000.png',
                'images/s_enemy/s_enemy0001.png',
                'images/s_enemy/s_enemy0002.png',
@@ -39,12 +48,24 @@ WALK_ENEMY = ['images/enemy/enemy0000.png',
 #load sprite
 class NinjaSprite:
     DELAY = 6
+    RUN_DELAY = 8
     def __init__(self,game):
         self.ninja = game.camera.world.player
         self.cycle = 0
         self.delay = 0
-
+        self.run_delay = 0
+        self.run_cycle = 0
     def draw(self,x,y):
+        if self.ninja.vx >0:
+            self.ninja_sprite = arcade.Sprite(RUN_NINJA[self.run_cycle],scale = SCALE)
+            self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
+            self.ninja_sprite.draw()
+            return
+        if self.ninja.vx <0:
+            self.ninja_sprite = arcade.Sprite(RUN_NINJA[self.run_cycle+4],scale = SCALE)
+            self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
+            self.ninja_sprite.draw()
+            return
         self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle + self.ninja.right],scale = SCALE)
         self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
         self.ninja_sprite.draw()
@@ -53,12 +74,19 @@ class NinjaSprite:
         if self.ninja.stop_charge > 0:
             return
         self.delay += 1
+        self.run_delay += 1
         if self.delay == NinjaSprite.DELAY:
             self.delay = 0
             if self.cycle != 7:
                 self.cycle += 1
             else:
                 self.cycle = 0
+        if self.run_delay == NinjaSprite.RUN_DELAY:
+            self.run_delay = 0
+            if self.run_cycle != 3:
+                self.run_cycle += 1
+            else:
+                self.run_cycle = 0
         
 class BlockSprite:
     def __init__(self,game):
