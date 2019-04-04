@@ -13,7 +13,15 @@ STAND_NINJA = ['images/ninja/Idle0000.png',
                'images/ninja/Idle0004.png',
                'images/ninja/Idle0005.png',
                'images/ninja/Idle0006.png',
-               'images/ninja/Idle0007.png']
+               'images/ninja/Idle0007.png',
+               'images/ninja/Idle_flip0000.png',
+               'images/ninja/Idle_flip0001.png',
+               'images/ninja/Idle_flip0002.png',
+               'images/ninja/Idle_flip0003.png',
+               'images/ninja/Idle_flip0004.png',
+               'images/ninja/Idle_flip0005.png',
+               'images/ninja/Idle_flip0006.png',
+               'images/ninja/Idle_flip0007.png']
 
 STAND_ENEMY = ['images/s_enemy/s_enemy0000.png',
                'images/s_enemy/s_enemy0001.png',
@@ -23,23 +31,26 @@ STAND_ENEMY = ['images/s_enemy/s_enemy0000.png',
 WALK_ENEMY = ['images/enemy/enemy0000.png',
                'images/enemy/enemy0001.png',
                'images/enemy/enemy0002.png',
-               'images/enemy/enemy0003.png']
+               'images/enemy/enemy0003.png',
+               'images/enemy/enemy_flip0000.png',
+               'images/enemy/enemy_flip0001.png',
+               'images/enemy/enemy_flip0002.png',
+               'images/enemy/enemy_flip0003.png']
 #load sprite
 class NinjaSprite:
     DELAY = 6
     def __init__(self,game):
-        self.game = game
+        self.ninja = game.camera.world.player
         self.cycle = 0
         self.delay = 0
-        self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle],scale = SCALE)
- 
+
     def draw(self,x,y):
-        self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle],scale = SCALE)
-        self.ninja_sprite.set_position(x,y)
+        self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle + self.ninja.right],scale = SCALE)
+        self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
         self.ninja_sprite.draw()
 
     def update(self):
-        if self.game.camera.world.player.stop_charge > 0:
+        if self.ninja.stop_charge > 0:
             return
         self.delay += 1
         if self.delay == NinjaSprite.DELAY:
@@ -68,9 +79,9 @@ class S_Enemy:
         self.game = game
         self.cycle = 0
         self.delay = 0
-        self.enemy_sprite = arcade.Sprite(STAND_ENEMY[self.cycle],scale = SCALE)
- 
+
     def draw(self,x,y):
+        
         self.enemy_sprite = arcade.Sprite(STAND_ENEMY[self.cycle],scale = SCALE)
         self.enemy_sprite.set_position(x,y)
         self.enemy_sprite.draw()
@@ -84,16 +95,19 @@ class S_Enemy:
             else:
                 self.cycle = 0    
 class Enemy:
-    DELAY = 10
+    DELAY = 6
     def __init__(self,game):
         self.game = game
         self.cycle = 0
         self.delay = 0
-        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle],scale = SCALE)
  
-    def draw(self,x,y):
-        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle],scale = SCALE)
-        self.enemy_sprite.set_position(x,y)
+    def draw(self,enemy,x,y):
+        if enemy.face_right == 1:
+            start_circle = 4
+        else:
+            start_circle = 0
+        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle + start_circle],scale = SCALE)
+        self.enemy_sprite.set_position(enemy.x + x,enemy.y + y)
         self.enemy_sprite.draw()
 
     def update(self):
@@ -120,12 +134,12 @@ class NinjaWindow(arcade.Window):
         arcade.start_render()
         self.camera.get_positon_displace()
         x,y = self.camera.displace_x,self.camera.displace_y
-        self.ninja.draw(self.camera.world.player.x+x,self.camera.world.player.y+y)
+        self.ninja.draw(x,y)
         self.block.draw(self.camera.world.block,self.camera.world.ground,x,y)
         for still_enemy in self.camera.world.s_enemy:
             self.s_enemy.draw(still_enemy.x+x,still_enemy.y+y)
         for walking_enemy in self.camera.world.enemy:
-            self.enemy.draw(walking_enemy.x+x,walking_enemy.y+y)
+            self.enemy.draw(walking_enemy,x,y)
     def update(self, delta):
         self.ninja.update()
         self.s_enemy.update()

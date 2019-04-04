@@ -16,6 +16,7 @@ class Player:
         self.y = y
         self.vx = 2
         self.vy = 0
+        self.right = 0
         Player.GRAVITY = (Player.GRAVITY * self.world.scale)//1
         Player.JUMP_SPEED = (Player.JUMP_SPEED * self.world.scale)//1
         Player.DASH_ACC = (Player.DASH_ACC * self.world.scale)//1
@@ -67,6 +68,10 @@ class Player:
         self.y, stop_y =  new_pos_y(self,self.world.get_ground_at_player_same_x(),self.world.unit_size)
         if stop_y:
             self.vy = 0
+        if self.vx >0:
+            self.right = 0
+        if self.vx<0:
+            self.right = 8
     def jump(self):
         if self.jump_charge > 0:
             self.jump_charge -= 1
