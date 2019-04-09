@@ -26,5 +26,13 @@ def read_map(directory,unit_size,scale):
                     world.create_ground(x,y)
                 elif line[symbol] == 'X':
                     world.create_block(x,y)
+                elif line[symbol] == 'W':
+                    world.create_spike(x,y,0)
+                elif line[symbol] == 'D':
+                    world.create_spike(x,y,1)
+                elif line[symbol] == 'S':
+                    world.create_spike(x,y,2)
+                elif line[symbol] == 'A':
+                    world.create_spike(x,y,3)
     return world
 

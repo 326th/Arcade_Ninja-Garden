@@ -176,6 +176,12 @@ class Block:
         self.y = y
     def die(self):
         self.world.block.remove(self)
+class Spike:
+    def __init__(self,world,x,y,rotation):
+        self.world = world
+        self.x = x
+        self.y = y
+        self.rotation = rotation
 ##class Warp:
 ##    def __init__(self,world,x,y,width,heigth,mapdirectory):
 ##        self.world = world
@@ -194,6 +200,7 @@ class World:
         self.ground = []
         self.s_enemy = []
         self.enemy = []
+        self.spike = []
         self.player = None
         self.hold_LEFT = False
         self.hold_RIGHT = False
@@ -260,3 +267,5 @@ class World:
         self.s_enemy.append(S_Enemy(self,x,y))
     def create_enemy(self,start_x,end_x,y):
         self.enemy.append(Enemy(self,start_x,end_x,y))
+    def create_spike(self,x,y,angle):
+        self.spike.append(Spike(self,x,y,angle))

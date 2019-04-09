@@ -6,6 +6,11 @@ SCREEN_WIDTH = UNIT_SIZE * (25)
 SCREEN_HEIGHT = UNIT_SIZE * (19)
 SCREEN_WIDTH = 32 * (25)
 SCREEN_HEIGHT = 32 * (19)
+SPIKE = ['images/spike/spike0000.png',
+         'images/spike/spike0001.png',
+         'images/spike/spike0002.png',
+         'images/spike/spike0003.png']
+
 STAND_NINJA = ['images/ninja/Idle0000.png',
                'images/ninja/Idle0001.png',
                'images/ninja/Idle0002.png',
@@ -135,29 +140,34 @@ class NinjaSprite:
         
 class BlockSprite:
     def __init__(self,game):
-        self.game = game
+        self.block = game.camera.world.block
+        self.ground = game.camera.world.ground
+        self.spike = game.camera.world.spike
         self.block_sprite = arcade.Sprite('images/block/block0000.png',scale = SCALE)
         self.ground_sprite = arcade.Sprite('images/dirt/Dirt0000.png',scale = SCALE)
-    def draw(self,block_lst,ground_lst,displace_x,displace_y):
-        for block in block_lst:
-            self.block_sprite.set_position(block.x+displace_x,block.y+displace_y)
+    def draw(self,x,y):
+        for block in self.block:
+            self.block_sprite.set_position(block.x+x,block.y+y)
             self.block_sprite.draw()
-        for ground in ground_lst:
-            self.ground_sprite.set_position(ground.x+displace_x,ground.y+displace_y)
+        for ground in self.ground:
+            self.ground_sprite.set_position(ground.x+x,ground.y+y)
             self.ground_sprite.draw()
-
+        for spike in self.spike:
+            spike_sprite = arcade.Sprite(SPIKE[spike.rotation],scale = SCALE)
+            spike_sprite.set_position(spike.x+x,spike.y+y)
+            spike_sprite.draw()
 class S_Enemy:
     DELAY = 10
     def __init__(self,game):
-        self.game = game
+        self.s_enemy = game.camera.world.s_enemy
         self.cycle = 0
         self.delay = 0
 
     def draw(self,x,y):
-        
         self.enemy_sprite = arcade.Sprite(STAND_ENEMY[self.cycle],scale = SCALE)
-        self.enemy_sprite.set_position(x,y)
-        self.enemy_sprite.draw()
+        for s_enemy in self.s_enemy:
+            self.enemy_sprite.set_position(s_enemy.x+x,s_enemy.y+y)
+            self.enemy_sprite.draw()
 
     def update(self):
         self.delay += 1
@@ -170,17 +180,18 @@ class S_Enemy:
 class Enemy:
     DELAY = 6
     def __init__(self,game):
-        self.game = game
+        self.enemy = game.camera.world.enemy
         self.cycle = 0
         self.delay = 0
  
-    def draw(self,enemy,x,y):
-        self.face_right = int((enemy.face_right*int(len(WALK_ENEMY)))/2)
-        if enemy.face_right == -1:
-            self.face_right = 0
-        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle + self.face_right],scale = SCALE)
-        self.enemy_sprite.set_position(enemy.x + x,enemy.y + y)
-        self.enemy_sprite.draw()
+    def draw(self,x,y):
+        for enemy in self.enemy:
+            self.face_right = int((enemy.face_right*int(len(WALK_ENEMY)))/2)
+            if enemy.face_right == -1:
+                self.face_right = 0
+            self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle + self.face_right],scale = SCALE)
+            self.enemy_sprite.set_position(enemy.x + x,enemy.y + y)
+            self.enemy_sprite.draw()
 
     def update(self):
         self.delay += 1
@@ -207,11 +218,9 @@ class NinjaWindow(arcade.Window):
         self.camera.get_positon_displace()
         x,y = self.camera.displace_x,self.camera.displace_y
         self.ninja.draw(x,y)
-        self.block.draw(self.camera.world.block,self.camera.world.ground,x,y)
-        for still_enemy in self.camera.world.s_enemy:
-            self.s_enemy.draw(still_enemy.x+x,still_enemy.y+y)
-        for walking_enemy in self.camera.world.enemy:
-            self.enemy.draw(walking_enemy,x,y)
+        self.block.draw(x,y)
+        self.s_enemy.draw(x,y)
+        self.enemy.draw(x,y)
     def update(self, delta):
         self.ninja.update()
         self.s_enemy.update()
