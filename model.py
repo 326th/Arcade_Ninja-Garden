@@ -71,7 +71,7 @@ class Player:
         if self.vx >0:
             self.right = 0
         if self.vx<0:
-            self.right = 8
+            self.right = 1
     def jump(self):
         if self.jump_charge > 0:
             self.jump_charge -= 1

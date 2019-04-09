@@ -1,4 +1,5 @@
 Enemy,3,9,1
+Enemy,3,7,2
 S_Enemy,7,3
 S_Enemy,12,1
 Player,2,2

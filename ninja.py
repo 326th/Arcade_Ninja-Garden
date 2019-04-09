@@ -40,6 +40,18 @@ RUN_NINJA = ['images/ninja/run0000.png',
                'images/ninja/run_flip0006.png',
                'images/ninja/run_flip0007.png']
 
+JUMP_NINJA = ['images/ninja/jump_up0000.png',
+               'images/ninja/jump_up0001.png',
+               'images/ninja/jump_up0002.png',
+               'images/ninja/jump_up_flip0000.png',
+               'images/ninja/jump_up_flip0001.png',
+               'images/ninja/jump_up_flip0002.png']
+
+FALL_NINJA = ['images/ninja/fall_down0000.png',
+               'images/ninja/fall_down0001.png',
+               'images/ninja/fall_down_flip0000.png',
+               'images/ninja/fall_down_flip0001.png']
+
 STAND_ENEMY = ['images/s_enemy/s_enemy0000.png',
                'images/s_enemy/s_enemy0001.png',
                'images/s_enemy/s_enemy0002.png',
@@ -57,19 +69,37 @@ WALK_ENEMY = ['images/enemy/enemy0000.png',
 class NinjaSprite:
     DELAY = 6
     RUN_DELAY = 4
+    JUMP_DELAY = 2 #and fall
     def __init__(self,game):
         self.ninja = game.camera.world.player
         self.cycle = 0
         self.delay = 0
         self.run_delay = 0
         self.run_cycle = 0
+        self.jump_delay = 0
+        self.jump_cycle = 0
+        self.fall_cycle = 0
     def draw(self,x,y):
-        if self.ninja.vx !=0:
-            self.ninja_sprite = arcade.Sprite(RUN_NINJA[self.run_cycle + self.ninja.right],scale = SCALE)
+        if self.ninja.vy > 0:
+            self.right = int((self.ninja.right*int(len(JUMP_NINJA)))/2)
+            self.ninja_sprite = arcade.Sprite(JUMP_NINJA[self.jump_cycle + self.right],scale = SCALE)
             self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
             self.ninja_sprite.draw()
             return
-        self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle + self.ninja.right],scale = SCALE)
+        if self.ninja.vy < 0:
+            self.right = int((self.ninja.right*int(len(FALL_NINJA)))/2)
+            self.ninja_sprite = arcade.Sprite(FALL_NINJA[self.fall_cycle + self.right],scale = SCALE)
+            self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
+            self.ninja_sprite.draw()
+            return
+        if self.ninja.vx !=0:
+            self.right = int((self.ninja.right*int(len(RUN_NINJA)))/2)
+            self.ninja_sprite = arcade.Sprite(RUN_NINJA[self.run_cycle + self.right],scale = SCALE)
+            self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
+            self.ninja_sprite.draw()
+            return
+        self.right = int((self.ninja.right*int(len(STAND_NINJA)))/2)
+        self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle + self.right],scale = SCALE)
         self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
         self.ninja_sprite.draw()
 
@@ -78,18 +108,30 @@ class NinjaSprite:
             return
         self.delay += 1
         self.run_delay += 1
+        self.jump_delay += 1
         if self.delay == NinjaSprite.DELAY:
             self.delay = 0
-            if self.cycle != 7:
+            if self.cycle != int((len(STAND_NINJA)/2)-1):
                 self.cycle += 1
             else:
                 self.cycle = 0
         if self.run_delay == NinjaSprite.RUN_DELAY:
             self.run_delay = 0
-            if self.run_cycle != 7:
+            if self.run_cycle != int((len(RUN_NINJA)/2)-1):
                 self.run_cycle += 1
             else:
                 self.run_cycle = 0
+        if self.jump_delay == NinjaSprite.JUMP_DELAY:
+            self.jump_delay = 0
+            if self.jump_cycle != int((len(JUMP_NINJA)/2)-1):
+                self.jump_cycle += 1
+            else:
+                self.jump_cycle = 0
+
+            if self.fall_cycle != int((len(FALL_NINJA)/2)-1):
+                self.fall_cycle += 1
+            else:
+                self.fall_cycle = 0
         
 class BlockSprite:
     def __init__(self,game):
@@ -121,7 +163,7 @@ class S_Enemy:
         self.delay += 1
         if self.delay == S_Enemy.DELAY:
             self.delay = 0
-            if self.cycle != 3:
+            if self.cycle != int(len(STAND_ENEMY)-1):
                 self.cycle += 1
             else:
                 self.cycle = 0    
@@ -133,11 +175,10 @@ class Enemy:
         self.delay = 0
  
     def draw(self,enemy,x,y):
-        if enemy.face_right == 1:
-            start_circle = 4
-        else:
-            start_circle = 0
-        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle + start_circle],scale = SCALE)
+        self.face_right = int((enemy.face_right*int(len(WALK_ENEMY)))/2)
+        if enemy.face_right == -1:
+            self.face_right = 0
+        self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle + self.face_right],scale = SCALE)
         self.enemy_sprite.set_position(enemy.x + x,enemy.y + y)
         self.enemy_sprite.draw()
 
@@ -145,7 +186,7 @@ class Enemy:
         self.delay += 1
         if self.delay == Enemy.DELAY:
             self.delay = 0
-            if self.cycle != 3:
+            if self.cycle != int((len(WALK_ENEMY)/2)-1):
                 self.cycle += 1
             else:
                 self.cycle = 0
