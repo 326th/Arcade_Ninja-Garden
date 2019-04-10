@@ -206,7 +206,7 @@ class NinjaWindow(arcade.Window):
         super().__init__(width,height)
  
         arcade.set_background_color(arcade.color.WHITE)
-        self.camera = Camera(UNIT_SIZE*SCALE,SCALE)
+        self.camera = Camera(self,UNIT_SIZE*SCALE,SCALE)
 
         self.enemy = Enemy(self)
         self.s_enemy = S_Enemy(self)

@@ -28,8 +28,9 @@ class Player:
             self.stop_charge -= 1
             return
         on_air = False
+        g_spike = self.world.get_ground_at_player_same_x()
         for g in self.world.ground + self.world.block:
-            if (g.x-(self.world.unit_size//2)< self.x < g.x+(self.world.unit_size//2)) and self.y == g.y + self.world.unit_size:
+            if self.y == g.y + self.world.unit_size:
                 if self.jump_charge == 0:
                     self.jump_charge = 2
                 on_air = True
@@ -109,6 +110,7 @@ class Player:
                        target.die()
             self.y = new_y + self.world.unit_size
         if direction == [1,0]:
+            self.right = 0
             ground = self.world.get_only_ground_at_player_same_y()
             new_x = self.x + DASH_RANGE
             for g in ground:
@@ -123,6 +125,7 @@ class Player:
                        target.die()
             self.x = new_x - self.world.unit_size
         if direction == [-1,0]:
+            self.right = 1
             ground = self.world.get_only_ground_at_player_same_y()
             new_x = self.x - DASH_RANGE
             for g in ground:
@@ -138,8 +141,8 @@ class Player:
             self.x = new_x + self.world.unit_size
         self.vx = 0
         self.vy = 0
-##    def die(self):
-##        #respawn`
+    def die(self):
+        pass
 class S_Enemy:
     def __init__(self,world,x,y):
         self.world = world
@@ -193,7 +196,8 @@ class Spike:
 ##    def warp(self):
 ##        self.world.warp(self.directory)
 class World:
-    def __init__(self,unit_size,scale):
+    def __init__(self,camera,unit_size,scale):
+        self.camera = camera
         self.scale = scale
         self.unit_size = unit_size
         self.block = []
@@ -228,6 +232,8 @@ class World:
             self.player.slash([1,0])
         if key == arcade.key.A:
             self.player.slash([-1,0])
+        if key == arcade.key.E:
+            self.player.die()
     def on_key_release(self,key,key_modifiers):
         if key == arcade.key.LEFT:
             self.hold_LEFT = False
@@ -235,24 +241,40 @@ class World:
             self.hold_RIGHT = False
     def get_only_ground_at_player_same_y(self):
         g = []
+        for s in self.spike:
+            if (s.y - (self.unit_size) < self.player.y < s.y + (self.unit_size)):
+                if s.rotation in (0,2):
+                    g.append(s)
         for ground in self.ground:
             if (ground.y - (self.unit_size) < self.player.y < ground.y + (self.unit_size)):
                 g.append(ground)
         return g
     def get_only_ground_at_player_same_x(self):
         g = []
+        for s in self.spike:
+            if (s.x - (self.unit_size) < self.player.x < s.x + (self.unit_size)):
+                if s.rotation in (1,3):
+                    g.append(s)
         for ground in self.ground:
             if (ground.x - (self.unit_size) < self.player.x < ground.x + (self.unit_size)):
                 g.append(ground)
         return g
     def get_ground_at_player_same_y(self):
         g = []
+        for s in self.spike:
+            if (s.y - (self.unit_size) < self.player.y < s.y + (self.unit_size)):
+                if s.rotation in (0,2):
+                    g.append(s)
         for ground in self.ground+self.block:
             if (ground.y - (self.unit_size) < self.player.y < ground.y + (self.unit_size)):
                 g.append(ground)
         return g
     def get_ground_at_player_same_x(self):
         g = []
+        for s in self.spike:
+            if (s.x - (self.unit_size) < self.player.x < s.x + (self.unit_size)):
+                if s.rotation in (1,3):
+                    g.append(s)
         for ground in self.ground+self.block:
             if (ground.x - (self.unit_size) < self.player.x < ground.x + (self.unit_size)):
                 g.append(ground)
@@ -269,3 +291,5 @@ class World:
         self.enemy.append(Enemy(self,start_x,end_x,y))
     def create_spike(self,x,y,angle):
         self.spike.append(Spike(self,x,y,angle))
+    def set_current_directory(self,directory):
+        self.directory = directory

@@ -2,8 +2,11 @@ import model
 import map_reader
 START_DIRECTORY = 'maps/start.txt'
 class Camera:
-    def __init__(self,unit_size,scale):
-        self.world = map_reader.read_map(START_DIRECTORY,unit_size,scale)
+    def __init__(self,ninjawindow,unit_size,scale):
+        self.ninjawindow = ninjawindow
+        self.unit_size = unit_size
+        self.scale = scale
+        self.world = map_reader.read_map(self,START_DIRECTORY,unit_size,scale)
         self.unit_size = unit_size
         self.displace_x = 0
         self.displace_y = 0
@@ -22,4 +25,3 @@ class Camera:
             self.displace_x = 0
         if self.displace_y > 0:
             self.displace_y = 0
-        
