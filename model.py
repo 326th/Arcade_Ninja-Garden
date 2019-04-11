@@ -1,4 +1,5 @@
 import arcade.key
+import world_load
 from collision_detection import new_pos_x, new_pos_y
 class Player:
     MAX_X = 6
@@ -142,7 +143,7 @@ class Player:
         self.vx = 0
         self.vy = 0
     def die(self):
-        pass
+        self.world.load(self.world.directory)
 class S_Enemy:
     def __init__(self,world,x,y):
         self.world = world
@@ -293,3 +294,62 @@ class World:
         self.spike.append(Spike(self,x,y,angle))
     def set_current_directory(self,directory):
         self.directory = directory
+    def player_pos(self,x,y):
+        self.player.jump_charge = 0
+        self.player.stop_charge = Player.MAX_STOP_CHARGE
+        self.player.x = x
+        self.player.y = y
+        self.player.vx = 0
+        self.player.vy = 0
+        self.player.right = 0
+    def enemy_pos(self,pos_lst):
+        if len(self.enemy) > len(pos_lst):
+            self.enemy = self.enemy[:len(pos_lst)]
+        need_to_create = len(pos_lst) - len(self.enemy)
+        for times in range(need_to_create):
+            self.create_enemy(0,0,0)
+        for pos in range(len(self.enemy)):
+            self.enemy[pos].x = pos_lst[pos][0]
+            self.enemy[pos].start_x = pos_lst[pos][0]
+            self.enemy[pos].end_x = pos_lst[pos][1]
+            self.enemy[pos].y = pos_lst[pos][2]
+            self.enemy[pos].face_right = -1
+    def s_enemy_pos(self,pos_lst):
+        if len(self.s_enemy) > len(pos_lst):
+            self.s_enemy = self.s_enemy[:len(pos_lst)]
+        need_to_create = len(pos_lst) - len(self.s_enemy)
+        for times in range(need_to_create):
+            self.create_s_enemy(0,0)
+        for pos in range(len(self.s_enemy)):
+            self.s_enemy[pos].x = pos_lst[pos][0]
+            self.s_enemy[pos].y = pos_lst[pos][1]
+    def ground_pos(self,pos_lst):
+        if len(self.ground) > len(pos_lst):
+            self.ground = self.ground[:len(pos_lst)]
+        need_to_create = len(pos_lst) - len(self.ground)
+        for times in range(need_to_create):
+            self.create_ground(0,0)
+        for pos in range(len(self.ground)):
+            self.ground[pos].x = pos_lst[pos][0]
+            self.ground[pos].y = pos_lst[pos][1]
+    def block_pos(self,pos_lst):
+        if len(self.block) > len(pos_lst):
+            self.block = self.block[:len(pos_lst)]
+        need_to_create = len(pos_lst) - len(self.block)
+        for times in range(need_to_create):
+            self.create_block(0,0)
+        for pos in range(len(self.block)):
+            self.block[pos].x = pos_lst[pos][0]
+            self.block[pos].y = pos_lst[pos][1]
+    def spike_pos(self,pos_lst):
+        if len(self.spike) > len(pos_lst):
+            self.spike = self.spike[:len(pos_lst)]
+        need_to_create = len(pos_lst) - len(self.spike)
+        for times in range(need_to_create):
+            self.create_spike(0,0)
+        for pos in range(len(self.spike)):
+            self.spike[pos].x = pos_lst[pos][0]
+            self.spike[pos].y = pos_lst[pos][1]
+            self.spike[pos].rotation = pos_lst[pos][2]
+    def load(self,directory):
+        world_load.set_up(self,directory)
