@@ -92,7 +92,7 @@ class Player:
             self.stop_charge = Player.MAX_STOP_CHARGE
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
-                if (target.x - (self.world.unit_size) < self.x < target.x + (self.world.unit_size)):
+                if (target.x - (self.world.unit_size/2) < self.x < target.x + (self.world.unit_size/2)):
                     if (self.y - ((self.world.unit_size/2)//1) < target.y < new_y - ((self.world.unit_size/2)//1)):
                        target.die()
             self.y = new_y - self.world.unit_size
@@ -106,7 +106,7 @@ class Player:
             self.stop_charge = Player.MAX_STOP_CHARGE
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
-                if (target.x - (self.world.unit_size) < self.x < target.x + (self.world.unit_size)):
+                if (target.x - (self.world.unit_size/2) < self.x < target.x + (self.world.unit_size/2)):
                     if (self.y + ((self.world.unit_size/2)//1) > target.y > new_y + ((self.world.unit_size/2)//1)):
                        target.die()
             self.y = new_y + self.world.unit_size
@@ -121,7 +121,7 @@ class Player:
             self.stop_charge = Player.MAX_STOP_CHARGE
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
-                if (target.y - (self.world.unit_size) < self.y < target.y + (self.world.unit_size)):
+                if (target.y - (self.world.unit_size/2) < self.y < target.y + (self.world.unit_size/2)):
                     if (self.x - ((self.world.unit_size/2)//1) < target.x < new_x - ((self.world.unit_size/2)//1)):
                        target.die()
             self.x = new_x - self.world.unit_size
@@ -136,7 +136,7 @@ class Player:
             self.stop_charge = Player.MAX_STOP_CHARGE
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
-                if (target.y - (self.world.unit_size) < self.y < target.y + (self.world.unit_size)):
+                if (target.y - (self.world.unit_size/2) < self.y < target.y + (self.world.unit_size/2)):
                     if (self.x + ((self.world.unit_size/2)//1) > target.x > new_x + ((self.world.unit_size/2)//1)):
                        target.die()
             self.x = new_x + self.world.unit_size

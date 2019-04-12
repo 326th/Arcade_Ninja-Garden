@@ -205,7 +205,7 @@ class NinjaWindow(arcade.Window):
     def __init__(self,width,height):
         super().__init__(width,height)
  
-        arcade.set_background_color(arcade.color.WHITE)
+        arcade.set_background_color(arcade.color.AZURE_MIST)
         self.camera = Camera(self,UNIT_SIZE*SCALE,SCALE)
 
         self.enemy = Enemy(self)
@@ -217,10 +217,10 @@ class NinjaWindow(arcade.Window):
         arcade.start_render()
         self.camera.get_positon_displace()
         x,y = self.camera.displace_x,self.camera.displace_y
-        self.ninja.draw(x,y)
         self.block.draw(x,y)
         self.s_enemy.draw(x,y)
         self.enemy.draw(x,y)
+        self.ninja.draw(x,y)
     def update(self, delta):
         self.ninja.update()
         self.s_enemy.update()
