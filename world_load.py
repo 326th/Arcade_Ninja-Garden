@@ -4,22 +4,26 @@ def set_up(world,directory):
     ground_pos = []
     block_pos = []
     spike_pos = []
+    warp_pos = []
     half_size = world.unit_size/2
     lst = list(reversed(open(directory,'r').read().split('\n')))
+    lst[:] = [x for x in lst if x]
     for string in range(len(lst)):
         line = lst[string]
-        y =  int(((string-1)*world.unit_size) + half_size)
-        component = line.split(',') # get [S_Enemy, str(x), ...
-        component = list(map(lambda x:int((int(x)*world.unit_size) + half_size), component[1:]))
-        if line[0:5] == 'Enemy':
+        y =  int(((string)*world.unit_size) + half_size)
+        component = line.split(',')
+        direc = []
+        if len(component) >= 5:
+            direc = [component[5]]
+        component = list(map(lambda x:int((int(x)*world.unit_size) + half_size), component[1:5])) + direc
+        if line[0:5] == 'enemy':
             enemy_pos.append([component[0],component[1],component[2]])
-        if line[0:7] == 'S_Enemy':
+        if line[0:7] == 's_Enemy':
             s_enemy_pos.append([component[0],component[1]])
-        elif line[0:6] == 'Player':
+        elif line[0:6] == 'player':
             world.player_pos(component[0],component[1])
-##        elif line[0:3] == 'Map':
-##            component = line.split(',') # get [Warp, str(x), ...
-##            #generate warp - Warp(world,startx,starty,width,heigth,mapdirectory
+        elif line[0:3] == 'map':
+            warp_pos.append([component[0],component[1],component[2],component[3],component[4],half_size])
         else:
             for symbol in range(len(line)):
                 x =  int((symbol*world.unit_size) + half_size)

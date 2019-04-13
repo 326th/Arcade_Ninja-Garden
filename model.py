@@ -173,6 +173,8 @@ class Ground:
         self.world = world
         self.x = x
         self.y = y
+    def die(self):
+        self.world.ground.remove(self)
 class Block:
     def __init__(self,world,x,y):
         self.world = world
@@ -186,16 +188,20 @@ class Spike:
         self.x = x
         self.y = y
         self.rotation = rotation
-##class Warp:
-##    def __init__(self,world,x,y,width,heigth,mapdirectory):
-##        self.world = world
-##        self.x = range(x,x + width)
-##        self.y = range(y,y + height)
-##        self.directory = mapdirectory
-##    def check_player_in(self):
-##        #check if player in it
-##    def warp(self):
-##        self.world.warp(self.directory)
+    def die(self):
+        self.world.spike.remove(self)
+class Warp:
+    def __init__(self,world,x,y,width,height,mapdirectory,half_size):
+        self.world = world
+        self.x = range(int(x-half_size),int(x + width))
+        self.y = range(int(y-half_size),int(y + height))
+        self.directory = mapdirectory
+    def check_player_in(self):
+        if self.world.player.x in self.x:
+            if self.world.player.y in self.y:
+               self.world.load(self.directory)
+    def die(self):
+        self.world.warp.remove(self)
 class World:
     def __init__(self,camera,unit_size,scale):
         self.camera = camera
@@ -206,6 +212,7 @@ class World:
         self.s_enemy = []
         self.enemy = []
         self.spike = []
+        self.warp = []
         self.player = None
         self.hold_LEFT = False
         self.hold_RIGHT = False
@@ -213,11 +220,8 @@ class World:
         self.player.update(delta)
         for enemy in self.enemy:
             enemy.update(delta)
-##    def warp(self,directory):
-##        #stop update world
-##        #loading screen
-##        #clear everything in world then load new world
-##        #remove loading screen
+        for warp in self.warp:
+            warp.check_player_in()
     def on_key_press(self, key, key_modifiers):
         if key == arcade.key.LEFT:
             self.hold_LEFT = True
@@ -280,6 +284,8 @@ class World:
             if (ground.x - (self.unit_size) < self.player.x < ground.x + (self.unit_size)):
                 g.append(ground)
         return g
+    def create_warp(self,x,y,width,height,mapdirectory,half_size):
+        self.warp.append(Warp(self,x,y,width,height,mapdirectory,half_size))
     def create_player(self,x,y):
         self.player = Player(self,x,y)
     def create_block(self,x,y):
@@ -304,7 +310,8 @@ class World:
         self.player.right = 0
     def enemy_pos(self,pos_lst):
         if len(self.enemy) > len(pos_lst):
-            self.enemy = self.enemy[:len(pos_lst)]
+            for times in range(len(self.enemy) - len(pos_lst)):
+                self.enemy[0].die()
         need_to_create = len(pos_lst) - len(self.enemy)
         for times in range(need_to_create):
             self.create_enemy(0,0,0)
@@ -316,7 +323,8 @@ class World:
             self.enemy[pos].face_right = -1
     def s_enemy_pos(self,pos_lst):
         if len(self.s_enemy) > len(pos_lst):
-            self.s_enemy = self.s_enemy[:len(pos_lst)]
+            for times in range(len(self.s_enemy) - len(pos_lst)):
+                self.s_enemy[0].die()
         need_to_create = len(pos_lst) - len(self.s_enemy)
         for times in range(need_to_create):
             self.create_s_enemy(0,0)
@@ -325,7 +333,8 @@ class World:
             self.s_enemy[pos].y = pos_lst[pos][1]
     def ground_pos(self,pos_lst):
         if len(self.ground) > len(pos_lst):
-            self.ground = self.ground[:len(pos_lst)]
+            for times in range(len(self.ground) - len(pos_lst)):
+                self.ground[0].die()
         need_to_create = len(pos_lst) - len(self.ground)
         for times in range(need_to_create):
             self.create_ground(0,0)
@@ -334,7 +343,8 @@ class World:
             self.ground[pos].y = pos_lst[pos][1]
     def block_pos(self,pos_lst):
         if len(self.block) > len(pos_lst):
-            self.block = self.block[:len(pos_lst)]
+            for times in range(len(self.block) - len(pos_lst)):
+                self.block[0].die()
         need_to_create = len(pos_lst) - len(self.block)
         for times in range(need_to_create):
             self.create_block(0,0)
@@ -343,13 +353,26 @@ class World:
             self.block[pos].y = pos_lst[pos][1]
     def spike_pos(self,pos_lst):
         if len(self.spike) > len(pos_lst):
-            self.spike = self.spike[:len(pos_lst)]
+            for times in range(len(self.spike) - len(pos_lst)):
+                self.spike[0].die()
         need_to_create = len(pos_lst) - len(self.spike)
         for times in range(need_to_create):
-            self.create_spike(0,0)
+            self.create_spike(0,0,0)
         for pos in range(len(self.spike)):
             self.spike[pos].x = pos_lst[pos][0]
             self.spike[pos].y = pos_lst[pos][1]
             self.spike[pos].rotation = pos_lst[pos][2]
+    def warp_pos(self,pos_lst):
+        if len(self.warp) > len(pos_lst):
+            for times in range(len(self.warp) - len(pos_lst)):
+                self.wrap[0].die()
+        need_to_create = len(pos_lst) - len(self.warp)
+        for times in range(need_to_create):
+            self.create_warp(0,0,0,0,'',0)
+        for pos in range(len(self.warp)):      
+            self.warp[pos].x = range(int(pos_lst[pos][0]-pos_lst[pos][5]),int(pos_lst[pos][0] + pos_lst[pos][2]))
+            self.warp[pos].y = range(int(pos_lst[pos][1]-pos_lst[pos][5]),int(pos_lst[pos][1] + pos_lst[pos][3]))
+            self.warp[pos].directory = pos_lst[pos][4]
     def load(self,directory):
         world_load.set_up(self,directory)
+        self.directory = directory

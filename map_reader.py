@@ -4,22 +4,25 @@ def find_map(directory):
 def read_map(camera,directory,unit_size,scale):
     half_size = unit_size / 2
     lst = find_map(directory)
+    lst[:] = [x for x in lst if x]
     world = model.World(camera,unit_size,scale)
     world.set_current_directory(directory)
     for string in range(len(lst)):
         line = lst[string]
-        y =  int(((string-1)*unit_size) + half_size)
-        component = line.split(',') # get [S_Enemy, str(x), ...
-        component = list(map(lambda x:int((int(x)*unit_size) + half_size), component[1:]))
-        if line[0:5] == 'Enemy':
+        y =  int(((string)*unit_size) + half_size)
+        component = line.split(',')
+        direc = []
+        if len(component) >= 5:
+            direc = [component[5]]
+        component = list(map(lambda x:int((int(x)*unit_size) + half_size), component[1:5])) + direc
+        if line[0:5] == 'enemy':
             world.create_enemy(component[0],component[1],component[2])
-        if line[0:7] == 'S_Enemy':
+        if line[0:7] == 's_Enemy':
             world.create_s_enemy(component[0],component[1])
-        elif line[0:6] == 'Player':
+        elif line[0:6] == 'player':
             world.create_player(component[0],component[1])
-##        elif line[0:3] == 'Map':
-##            component = line.split(',') # get [Warp, str(x), ...
-##            #generate warp - Warp(world,startx,starty,width,heigth,mapdirectory
+        elif line[0:3] == 'map':
+            world.create_warp(component[0],component[1],component[2],component[3],component[4],half_size)
         else:
             for symbol in range(len(line)):
                 x =  int((symbol*unit_size) + half_size)
