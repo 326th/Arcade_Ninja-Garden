@@ -212,7 +212,11 @@ class NinjaWindow(arcade.Window):
         self.s_enemy = S_Enemy(self)
         self.block = BlockSprite(self)
         self.ninja = NinjaSprite(self)
-
+    def update(self, delta):
+        self.camera.update(delta)
+        self.ninja.update()
+        self.s_enemy.update()
+        self.enemy.update()
     def on_draw(self):
         arcade.start_render()
         self.camera.get_positon_displace()
@@ -221,11 +225,7 @@ class NinjaWindow(arcade.Window):
         self.s_enemy.draw(x,y)
         self.enemy.draw(x,y)
         self.ninja.draw(x,y)
-    def update(self, delta):
-        self.ninja.update()
-        self.s_enemy.update()
-        self.enemy.update()
-        self.camera.update(delta)
+    
     def on_key_press(self,key,key_modifiers):
         self.camera.on_key_press(key,key_modifiers)
     def on_key_release(self,key,key_modifiers):

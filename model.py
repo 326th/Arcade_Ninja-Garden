@@ -11,7 +11,7 @@ class Player:
     MAX_STOP_CHARGE = 20
     def __init__(self,world,x,y):
         self.jump_charge = 0
-        self.stop_charge = Player.MAX_STOP_CHARGE
+        self.stop_charge = 0
         self.world = world
         self.x = x
         self.y = y
@@ -65,16 +65,21 @@ class Player:
         elif self.vy < -Player.MAX_Y:
             self.vy = -Player.MAX_Y
         self.x, stop_x =  new_pos_x(self,self.world.get_ground_at_player_same_y(),self.world.unit_size)
+        self.y, stop_y =  new_pos_y(self,self.world.get_ground_at_player_same_x(),self.world.unit_size)
+        self.detect_spike()
         if stop_x:
             self.vx = 0
-        self.y, stop_y =  new_pos_y(self,self.world.get_ground_at_player_same_x(),self.world.unit_size)
         if stop_y:
             self.vy = 0
         if self.vx >0:
             self.right = 0
         if self.vx<0:
             self.right = 1
+        self.detect_death()
     def jump(self):
+        if self.stop_charge >0:
+            self.stop_charge -= 1
+            return
         if self.jump_charge > 0:
             self.jump_charge -= 1
             self.vy = Player.JUMP_SPEED
@@ -89,7 +94,6 @@ class Player:
                 if (self.y < g.y < self.y + DASH_RANGE):
                     if g.y < new_y:
                         new_y = g.y
-            self.stop_charge = Player.MAX_STOP_CHARGE
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.x - (self.world.unit_size/2) < self.x < target.x + (self.world.unit_size/2)):
@@ -103,7 +107,6 @@ class Player:
                 if (self.y > g.y > self.y - DASH_RANGE):
                     if g.y > new_y:
                         new_y = g.y
-            self.stop_charge = Player.MAX_STOP_CHARGE
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.x - (self.world.unit_size/2) < self.x < target.x + (self.world.unit_size/2)):
@@ -118,7 +121,6 @@ class Player:
                 if (self.x < g.x < self.x + DASH_RANGE):
                     if g.x < new_x:
                         new_x = g.x
-            self.stop_charge = Player.MAX_STOP_CHARGE
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.y - (self.world.unit_size/2) < self.y < target.y + (self.world.unit_size/2)):
@@ -133,17 +135,28 @@ class Player:
                 if (self.x > g.x > self.x - DASH_RANGE):
                     if g.x > new_x:
                         new_x = g.x
-            self.stop_charge = Player.MAX_STOP_CHARGE
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.y - (self.world.unit_size/2) < self.y < target.y + (self.world.unit_size/2)):
                     if (self.x + ((self.world.unit_size/2)//1) > target.x > new_x + ((self.world.unit_size/2)//1)):
                        target.die()
             self.x = new_x + self.world.unit_size
+        self.stop_charge = Player.MAX_STOP_CHARGE
         self.vx = 0
         self.vy = 0
     def die(self):
         self.world.load(self.world.directory)
+    def detect_death(self):
+        all_enemy = self.world.enemy + self.world.s_enemy
+        for enemy in all_enemy:
+            if enemy.y - int(self.world.unit_size*3/8) <= self.y <= enemy.y + int(self.world.unit_size*3/8):
+                if enemy.x - int(self.world.unit_size*3/8) <= self.x <= enemy.x + int(self.world.unit_size*3/8):
+                    self.die()
+    def detect_spike(self):
+        for spike in self.world.spike:
+            if spike.y - int(self.world.unit_size-1) <= self.y <= spike.y + int(self.world.unit_size-1):
+                if spike.x - int(self.world.unit_size-1) <= self.x <= spike.x + int(self.world.unit_size-1):
+                    self.die()
 class S_Enemy:
     def __init__(self,world,x,y):
         self.world = world
@@ -218,8 +231,9 @@ class World:
         self.hold_RIGHT = False
     def update(self,delta):
         self.player.update(delta)
-        for enemy in self.enemy:
-            enemy.update(delta)
+        if self.player.stop_charge == 0:
+            for enemy in self.enemy:
+                enemy.update(delta)
         for warp in self.warp:
             warp.check_player_in()
     def on_key_press(self, key, key_modifiers):
@@ -266,20 +280,12 @@ class World:
         return g
     def get_ground_at_player_same_y(self):
         g = []
-        for s in self.spike:
-            if (s.y - (self.unit_size) < self.player.y < s.y + (self.unit_size)):
-                if s.rotation in (0,2):
-                    g.append(s)
         for ground in self.ground+self.block:
             if (ground.y - (self.unit_size) < self.player.y < ground.y + (self.unit_size)):
                 g.append(ground)
         return g
     def get_ground_at_player_same_x(self):
         g = []
-        for s in self.spike:
-            if (s.x - (self.unit_size) < self.player.x < s.x + (self.unit_size)):
-                if s.rotation in (1,3):
-                    g.append(s)
         for ground in self.ground+self.block:
             if (ground.x - (self.unit_size) < self.player.x < ground.x + (self.unit_size)):
                 g.append(ground)
@@ -302,7 +308,7 @@ class World:
         self.directory = directory
     def player_pos(self,x,y):
         self.player.jump_charge = 0
-        self.player.stop_charge = Player.MAX_STOP_CHARGE
+        self.player.stop_charge = 0
         self.player.x = x
         self.player.y = y
         self.player.vx = 0
