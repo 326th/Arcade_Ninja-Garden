@@ -4,8 +4,7 @@ SCALE = 1.5
 UNIT_SIZE = 32
 SCREEN_WIDTH = UNIT_SIZE * (25)
 SCREEN_HEIGHT = UNIT_SIZE * (19)
-SCREEN_WIDTH = 32 * (25)
-SCREEN_HEIGHT = 32 * (19)
+
 SPIKE = ['images/spike/spike0000.png',
          'images/spike/spike0001.png',
          'images/spike/spike0002.png',
@@ -144,18 +143,24 @@ class BlockSprite:
         self.ground = game.camera.world.ground
         self.spike = game.camera.world.spike
         self.block_sprite = arcade.Sprite('images/block/block0000.png',scale = SCALE)
-        self.ground_sprite = arcade.Sprite('images/dirt/Dirt0000.png',scale = SCALE)
+        se lf.ground_sprite = arcade.Sprite('images/dirt/Dirt0000.png',scale = SCALE)
     def draw(self,x,y):
         for block in self.block:
-            self.block_sprite.set_position(block.x+x,block.y+y)
-            self.block_sprite.draw()
+            if -UNIT_SIZE*SCALE/2 <= block.x+x <= SCREEN_WIDTH + UNIT_SIZE*SCALE/2:
+                if -UNIT_SIZE*SCALE/2 <= block.y+y <= SCREEN_HEIGHT + UNIT_SIZE*SCALE/2:
+                    self.block_sprite.set_position(block.x+x,block.y+y)
+                    self.block_sprite.draw()
         for ground in self.ground:
-            self.ground_sprite.set_position(ground.x+x,ground.y+y)
-            self.ground_sprite.draw()
+            if -UNIT_SIZE*SCALE/2 <= ground.x+x <= SCREEN_WIDTH + UNIT_SIZE*SCALE/2:
+                if -UNIT_SIZE*SCALE/2 <= ground.y+y <= SCREEN_HEIGHT + UNIT_SIZE*SCALE/2:
+                    self.ground_sprite.set_position(ground.x+x,ground.y+y)
+                    self.ground_sprite.draw()
         for spike in self.spike:
-            spike_sprite = arcade.Sprite(SPIKE[spike.rotation],scale = SCALE)
-            spike_sprite.set_position(spike.x+x,spike.y+y)
-            spike_sprite.draw()
+            if -UNIT_SIZE*SCALE/2 <= spike.x+x <= SCREEN_WIDTH + UNIT_SIZE*SCALE/2:
+                if -UNIT_SIZE*SCALE/2 <= spike.y+y <= SCREEN_HEIGHT + UNIT_SIZE*SCALE/2:
+                    spike_sprite = arcade.Sprite(SPIKE[spike.rotation],scale = SCALE)
+                    spike_sprite.set_position(spike.x+x,spike.y+y)
+                    spike_sprite.draw()
 class S_Enemy:
     DELAY = 10
     def __init__(self,game):
@@ -166,8 +171,10 @@ class S_Enemy:
     def draw(self,x,y):
         self.enemy_sprite = arcade.Sprite(STAND_ENEMY[self.cycle],scale = SCALE)
         for s_enemy in self.s_enemy:
-            self.enemy_sprite.set_position(s_enemy.x+x,s_enemy.y+y)
-            self.enemy_sprite.draw()
+            if -UNIT_SIZE*SCALE/2 <= s_enemy.x+x <= SCREEN_WIDTH + UNIT_SIZE*SCALE/2:
+                if -UNIT_SIZE*SCALE/2 <= s_enemy.y+y <= SCREEN_HEIGHT + UNIT_SIZE*SCALE/2:
+                    self.enemy_sprite.set_position(s_enemy.x+x,s_enemy.y+y)
+                    self.enemy_sprite.draw()
 
     def update(self):
         self.delay += 1
@@ -186,12 +193,14 @@ class Enemy:
  
     def draw(self,x,y):
         for enemy in self.enemy:
-            self.face_right = int((enemy.face_right*int(len(WALK_ENEMY)))/2)
-            if enemy.face_right == -1:
-                self.face_right = 0
-            self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle + self.face_right],scale = SCALE)
-            self.enemy_sprite.set_position(enemy.x + x,enemy.y + y)
-            self.enemy_sprite.draw()
+            if -UNIT_SIZE*SCALE/2 <= enemy.x+x <= SCREEN_WIDTH + UNIT_SIZE*SCALE/2:
+                if -UNIT_SIZE*SCALE/2 <= enemy.y+y <= SCREEN_HEIGHT + UNIT_SIZE*SCALE/2:
+                    self.face_right = int((enemy.face_right*int(len(WALK_ENEMY)))/2)
+                    if enemy.face_right == -1:
+                        self.face_right = 0
+                    self.enemy_sprite = arcade.Sprite(WALK_ENEMY[self.cycle + self.face_right],scale = SCALE)
+                    self.enemy_sprite.set_position(enemy.x + x,enemy.y + y)
+                    self.enemy_sprite.draw()
 
     def update(self):
         self.delay += 1
