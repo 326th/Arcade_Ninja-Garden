@@ -12,6 +12,7 @@ class Player:
     def __init__(self,world,x,y):
         self.jump_charge = 0
         self.stop_charge = 0
+        self.dash_charge = 0
         self.world = world
         self.x = x
         self.y = y
@@ -25,6 +26,7 @@ class Player:
         Player.MAX_X = (Player.MAX_X * self.world.scale)//1
         Player.MAX_Y = (Player.MAX_Y * self.world.scale)//1
     def update(self,delta):
+        
         if self.stop_charge >0:
             self.stop_charge -= 1
             return
@@ -32,9 +34,10 @@ class Player:
         g_spike = self.world.get_ground_at_player_same_x()
         for g in self.world.ground + self.world.block:
             if self.y == g.y + self.world.unit_size:
-                if self.jump_charge == 0:
+                if g.x - self.world.unit_size/2 < self.x <g.x + self.world.unit_size/2: 
                     self.jump_charge = 2
-                on_air = True
+                    self.dash_charge = 1
+                    on_air = True
         if on_air:
             if self.jump_charge == 2:
                     self.jump_charge = 1
@@ -78,7 +81,6 @@ class Player:
         self.detect_death()
     def jump(self):
         if self.stop_charge >0:
-            self.stop_charge -= 1
             return
         if self.jump_charge > 0:
             self.jump_charge -= 1
@@ -86,6 +88,9 @@ class Player:
     def slash(self,direction):
         if self.stop_charge >0:
             return
+        if not self.dash_charge:
+            return
+        self.dash_charge = 0
         DASH_RANGE = (4*self.world.unit_size) + 20
         if direction == [0,1]:
             ground = self.world.get_only_ground_at_player_same_x()
@@ -186,6 +191,7 @@ class Ground:
         self.world = world
         self.x = x
         self.y = y
+        self.image = 0
     def die(self):
         self.world.ground.remove(self)
 class Block:
@@ -251,8 +257,6 @@ class World:
             self.player.slash([1,0])
         if key == arcade.key.A:
             self.player.slash([-1,0])
-        if key == arcade.key.E:
-            self.player.die()
     def on_key_release(self,key,key_modifiers):
         if key == arcade.key.LEFT:
             self.hold_LEFT = False
@@ -382,3 +386,18 @@ class World:
     def load(self,directory):
         world_load.set_up(self,directory)
         self.directory = directory
+    def update_ground(self,grass_top = True):
+        grass_top = -1
+        if grass_top:
+            for ground in self.ground:
+                if grass_top < ground.y:
+                    grass_top = ground.y
+        for ground in self.ground:
+            if ground.y != grass_top:
+                other_ground = []
+                for ground2 in self.ground:
+                    if ground2.x == ground.x:
+                        other_ground.append(ground2.y-self.unit_size)
+                if ground.y not in (other_ground):
+                    ground.image = 1
+                

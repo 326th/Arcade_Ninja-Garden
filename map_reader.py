@@ -38,5 +38,6 @@ def read_map(camera,directory,unit_size,scale):
                     world.create_spike(x,y,2)
                 elif line[symbol] == 'A':
                     world.create_spike(x,y,3)
+    world.update_ground()
     return world
 

@@ -142,8 +142,9 @@ class BlockSprite:
         self.block = game.camera.world.block
         self.ground = game.camera.world.ground
         self.spike = game.camera.world.spike
-        self.block_sprite = arcade.Sprite('images/block/block0000.png',scale = SCALE)
-        se lf.ground_sprite = arcade.Sprite('images/dirt/Dirt0000.png',scale = SCALE)
+        self.block_sprite = arcade.Sprite('images/block/block0000.png',scale = SCALE)                             
+        self.ground_sprite = [arcade.Sprite('images/dirt/Dirt0000.png',scale = SCALE),
+                              arcade.Sprite('images/dirt/Dirt0001.png',scale = SCALE)]
     def draw(self,x,y):
         for block in self.block:
             if -UNIT_SIZE*SCALE/2 <= block.x+x <= SCREEN_WIDTH + UNIT_SIZE*SCALE/2:
@@ -153,8 +154,8 @@ class BlockSprite:
         for ground in self.ground:
             if -UNIT_SIZE*SCALE/2 <= ground.x+x <= SCREEN_WIDTH + UNIT_SIZE*SCALE/2:
                 if -UNIT_SIZE*SCALE/2 <= ground.y+y <= SCREEN_HEIGHT + UNIT_SIZE*SCALE/2:
-                    self.ground_sprite.set_position(ground.x+x,ground.y+y)
-                    self.ground_sprite.draw()
+                    self.ground_sprite[ground.image].set_position(ground.x+x,ground.y+y)
+                    self.ground_sprite[ground.image].draw()
         for spike in self.spike:
             if -UNIT_SIZE*SCALE/2 <= spike.x+x <= SCREEN_WIDTH + UNIT_SIZE*SCALE/2:
                 if -UNIT_SIZE*SCALE/2 <= spike.y+y <= SCREEN_HEIGHT + UNIT_SIZE*SCALE/2:
