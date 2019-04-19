@@ -25,6 +25,7 @@ class Player:
         Player.FRICTION = (Player.FRICTION * self.world.scale)//1
         Player.MAX_X = (Player.MAX_X * self.world.scale)//1
         Player.MAX_Y = (Player.MAX_Y * self.world.scale)//1
+        self.last_dir = 0
     def update(self,delta):
         
         if self.stop_charge >0:
@@ -41,14 +42,25 @@ class Player:
         if on_air:
             if self.jump_charge == 2:
                     self.jump_charge = 1
-        if self.world.hold_RIGHT == True:
+        if self.world.hold_RIGHT and self.world.hold_LEFT:
+            if self.last_dir == 1:
+                if self.vx >0:
+                    self.vx = -self.vx
+                self.vx -= Player.DASH_ACC
+            elif self.last_dir == -1:
+                if self.vx <0:
+                    self.vx = -self.vx
+                self.vx += Player.DASH_ACC
+        elif self.world.hold_RIGHT:
             if self.vx <0:
                 self.vx = -self.vx
             self.vx += Player.DASH_ACC
-        elif self.world.hold_LEFT == True:
+            self.last_dir = 1
+        elif self.world.hold_LEFT:
             if self.vx >0:
                 self.vx = -self.vx
             self.vx -= Player.DASH_ACC
+            self.last_dir = -1
         else:
             if self.vx >0:
                 self.vx -= Player.FRICTION
@@ -102,7 +114,7 @@ class Player:
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.x - (self.world.unit_size/2) < self.x < target.x + (self.world.unit_size/2)):
-                    if (self.y - ((self.world.unit_size/2)//1) < target.y < new_y - ((self.world.unit_size/2)//1)):
+                    if (self.y - ((self.world.unit_size/2)//1) < target.y < new_y + ((self.world.unit_size/2)//1)):
                        target.die()
             self.y = new_y - self.world.unit_size
         if direction == [0,-1]:
@@ -115,7 +127,7 @@ class Player:
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.x - (self.world.unit_size/2) < self.x < target.x + (self.world.unit_size/2)):
-                    if (self.y + ((self.world.unit_size/2)//1) > target.y > new_y + ((self.world.unit_size/2)//1)):
+                    if (self.y + ((self.world.unit_size/2)//1) > target.y > new_y - ((self.world.unit_size/2)//1)):
                        target.die()
             self.y = new_y + self.world.unit_size
         if direction == [1,0]:
@@ -129,9 +141,9 @@ class Player:
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.y - (self.world.unit_size/2) < self.y < target.y + (self.world.unit_size/2)):
-                    if (self.x - ((self.world.unit_size/2)//1) < target.x < new_x - ((self.world.unit_size/2)//1)):
+                    if (self.x - ((self.world.unit_size/2)//1) < target.x < new_x + ((self.world.unit_size/2)//1)):
                        target.die()
-            self.x = new_x - self.world.unit_size
+            self.x = new_x - self.world.unit_size 
         if direction == [-1,0]:
             self.right = 1
             ground = self.world.get_only_ground_at_player_same_y()
@@ -143,7 +155,7 @@ class Player:
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.y - (self.world.unit_size/2) < self.y < target.y + (self.world.unit_size/2)):
-                    if (self.x + ((self.world.unit_size/2)//1) > target.x > new_x + ((self.world.unit_size/2)//1)):
+                    if (self.x + ((self.world.unit_size/2)//1) > target.x > new_x - ((self.world.unit_size/2)//1)):
                        target.die()
             self.x = new_x + self.world.unit_size
         self.stop_charge = Player.MAX_STOP_CHARGE
@@ -257,6 +269,8 @@ class World:
             self.player.slash([1,0])
         if key == arcade.key.A:
             self.player.slash([-1,0])
+        if key == arcade.key.E:
+            self.player.die()
     def on_key_release(self,key,key_modifiers):
         if key == arcade.key.LEFT:
             self.hold_LEFT = False

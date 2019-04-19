@@ -1,11 +1,20 @@
-player,1,5
+s_Enemy,26,10
 
-MMMMMMOm
+player,1,6
 
-MMMMMMOM
-
-MMMMMMOM
-
-MMMMMMOM
-
-MMMMMMMM
+.........M
+.........M
+.........M
+.........M
+MMMMMMMMMM
+M....................................
+M....................................
+M....................................
+M....................................
+M....................................
+MMMMMM...MMMMMM...............MMMMMMM
+MMMMMM...MMMMMM...............MMMMMMM
+MMMMMM...MMMMMM...............MMMMMMM
+MMMMMM...MMMMMM...............MMMMMMM
+MMMMMMWWWMMMMMMWWWWWWWWWWWWWWWMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
