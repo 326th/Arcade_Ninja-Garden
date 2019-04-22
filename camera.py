@@ -17,8 +17,8 @@ class Camera:
     def on_key_release(self,key,key_modifiers):
         self.world.on_key_release(key,key_modifiers)
     def get_positon_displace(self):
-        if self.world.player.stop_charge>0:
-            return
+##        if self.world.player.stop_charge>0:
+##            return
         self.displace_x = -(self.world.player.x - (5*self.unit_size))
         self.displace_y = -(self.world.player.y - (5*self.unit_size))
         if self.displace_x > 0:

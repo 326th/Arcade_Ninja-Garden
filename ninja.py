@@ -69,11 +69,30 @@ WALK_ENEMY = ['images/enemy/enemy0000.png',
                'images/enemy/enemy_flip0001.png',
                'images/enemy/enemy_flip0002.png',
                'images/enemy/enemy_flip0003.png']
+
+DEAD_ENEMY = ['images/d_enemy/d_enemy0000.png',
+               'images/d_enemy/d_enemy0001.png',
+               'images/d_enemy/d_enemy0002.png',
+               'images/d_enemy/d_enemy0003.png',
+               'images/d_enemy/d_enemy0004.png',
+               'images/d_enemy/d_enemy0005.png',
+               'images/d_enemy/d_enemy0006.png',
+               'images/d_enemy/d_enemy0007.png',
+               'images/d_enemy/d_enemy0008.png',
+               'images/d_enemy/d_enemy_flip0000.png',
+               'images/d_enemy/d_enemy_flip0001.png',
+               'images/d_enemy/d_enemy_flip0002.png',
+               'images/d_enemy/d_enemy_flip0003.png',
+               'images/d_enemy/d_enemy_flip0004.png',
+               'images/d_enemy/d_enemy_flip0005.png',
+               'images/d_enemy/d_enemy_flip0006.png',
+               'images/d_enemy/d_enemy_flip0007.png',
+               'images/d_enemy/d_enemy_flip0008.png']
 #load sprite
 class NinjaSprite:
     DELAY = 6
     RUN_DELAY = 4
-    JUMP_DELAY = 2 #and fall
+    JUMP_DELAY = 4 #and fall
     def __init__(self,game):
         self.ninja = game.camera.world.player
         self.cycle = 0
@@ -211,6 +230,31 @@ class Enemy:
                 self.cycle += 1
             else:
                 self.cycle = 0
+class D_Enemy:
+    DELAY = 2
+    def __init__(self,game):
+        self.d_enemy = game.camera.world.d_enemy
+ 
+    def draw(self,x,y):
+        for d_enemy in self.d_enemy:
+            if -UNIT_SIZE*SCALE/2 <= d_enemy.x+x <= SCREEN_WIDTH + UNIT_SIZE*SCALE/2:
+                if -UNIT_SIZE*SCALE/2 <= d_enemy.y+y <= SCREEN_HEIGHT + UNIT_SIZE*SCALE/2:
+                    self.face_right = int((d_enemy.face*int(len(DEAD_ENEMY)))/2)
+                    if d_enemy.face == 1:
+                        self.face_right = 0
+                    self.enemy_sprite = arcade.Sprite(DEAD_ENEMY[d_enemy.cycle + self.face_right],scale = SCALE)
+                    self.enemy_sprite.set_position(d_enemy.x + x,d_enemy.y + y)
+                    self.enemy_sprite.draw()
+
+    def update(self):
+        for d_enemy in self.d_enemy:
+            d_enemy.delay += 1
+            if d_enemy.delay == D_Enemy.DELAY:
+                d_enemy.delay = 0
+                if d_enemy.cycle != int((len(DEAD_ENEMY)/2)-1):
+                    d_enemy.cycle += 1
+                else:
+                    d_enemy.die()
 class NinjaWindow(arcade.Window):
     def __init__(self,width,height):
         super().__init__(width,height)
@@ -222,6 +266,7 @@ class NinjaWindow(arcade.Window):
         self.s_enemy = S_Enemy(self)
         self.block = BlockSprite(self)
         self.ninja = NinjaSprite(self)
+        self.d_enemy = D_Enemy(self)
     def on_key_press(self,key,key_modifiers):
         self.camera.on_key_press(key,key_modifiers)
     def on_key_release(self,key,key_modifiers):
@@ -231,6 +276,7 @@ class NinjaWindow(arcade.Window):
         self.ninja.update()
         self.s_enemy.update()
         self.enemy.update()
+        self.d_enemy.update()
     def on_draw(self):
         arcade.start_render()
         self.camera.get_positon_displace()
@@ -239,7 +285,7 @@ class NinjaWindow(arcade.Window):
         self.s_enemy.draw(x,y)
         self.enemy.draw(x,y)
         self.ninja.draw(x,y)
-    
+        self.d_enemy.draw(x,y)
     
         
 def main():

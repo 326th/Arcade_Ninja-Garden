@@ -8,7 +8,7 @@ class Player:
     JUMP_SPEED = 12
     DASH_ACC = 1
     FRICTION = MAX_X/5
-    MAX_STOP_CHARGE = 20
+    MAX_STOP_CHARGE = 5
     def __init__(self,world,x,y):
         self.jump_charge = 0
         self.stop_charge = 0
@@ -16,6 +16,8 @@ class Player:
         self.world = world
         self.x = x
         self.y = y
+        self.target_x = 0
+        self.target_y = 0
         self.vx = 0
         self.vy = 0
         self.right = 0
@@ -29,6 +31,10 @@ class Player:
     def update(self,delta):
         
         if self.stop_charge >0:
+            if self.target_x != self.x:
+                self.x += (self.target_x - self.x)/self.stop_charge
+            if self.target_y != self.y:
+                self.y += (self.target_y - self.y)/self.stop_charge
             self.stop_charge -= 1
             return
         on_air = False
@@ -116,7 +122,8 @@ class Player:
                 if (target.x - (self.world.unit_size/2) < self.x < target.x + (self.world.unit_size/2)):
                     if (self.y - ((self.world.unit_size/2)//1) < target.y < new_y + ((self.world.unit_size/2)//1)):
                        target.die()
-            self.y = new_y - self.world.unit_size
+            self.target_y = new_y - self.world.unit_size
+            self.target_x = self.x
         if direction == [0,-1]:
             ground = self.world.get_only_ground_at_player_same_x()
             new_y = self.y - DASH_RANGE
@@ -129,7 +136,8 @@ class Player:
                 if (target.x - (self.world.unit_size/2) < self.x < target.x + (self.world.unit_size/2)):
                     if (self.y + ((self.world.unit_size/2)//1) > target.y > new_y - ((self.world.unit_size/2)//1)):
                        target.die()
-            self.y = new_y + self.world.unit_size
+            self.target_y = new_y + self.world.unit_size
+            self.target_x = self.x
         if direction == [1,0]:
             self.right = 0
             ground = self.world.get_only_ground_at_player_same_y()
@@ -143,7 +151,8 @@ class Player:
                 if (target.y - (self.world.unit_size/2) < self.y < target.y + (self.world.unit_size/2)):
                     if (self.x - ((self.world.unit_size/2)//1) < target.x < new_x + ((self.world.unit_size/2)//1)):
                        target.die()
-            self.x = new_x - self.world.unit_size 
+            self.target_x = new_x - self.world.unit_size
+            self.target_y = self.y
         if direction == [-1,0]:
             self.right = 1
             ground = self.world.get_only_ground_at_player_same_y()
@@ -157,7 +166,8 @@ class Player:
                 if (target.y - (self.world.unit_size/2) < self.y < target.y + (self.world.unit_size/2)):
                     if (self.x + ((self.world.unit_size/2)//1) > target.x > new_x - ((self.world.unit_size/2)//1)):
                        target.die()
-            self.x = new_x + self.world.unit_size
+            self.target_x = new_x + self.world.unit_size
+            self.target_y = self.y
         self.stop_charge = Player.MAX_STOP_CHARGE
         self.vx = 0
         self.vy = 0
@@ -180,6 +190,7 @@ class S_Enemy:
         self.x = x
         self.y = y
     def die(self):
+        self.world.create_d_enemy(self.x,self.y,1)
         self.world.s_enemy.remove(self)
 class Enemy:
     MOVE_SPEED = 3
@@ -189,8 +200,9 @@ class Enemy:
         self.start_x = start_x
         self.end_x = end_x
         self.y = y
-        self.face_right = -1 #1 right, -1 left
+        self.face_right = 1 #1 right, -1 left
     def die(self):
+        self.world.create_d_enemy(self.x,self.y,-self.face_right)
         self.world.enemy.remove(self)
     def update(self,delta):
         if self.face_right == 1 and self.x >= self.end_x:
@@ -198,6 +210,17 @@ class Enemy:
         if self.face_right == -1 and self.x <= self.start_x:
             self.face_right = 1
         self.x += Enemy.MOVE_SPEED * self.face_right
+class D_Enemy:
+    def __init__(self,world,x,y,face):
+        self.x = x
+        self.y = y
+        self.world = world
+        self.face = face
+        self.stage = 0
+        self.delay = 0
+        self.cycle = 0
+    def die(self):
+        self.world.d_enemy.remove(self)
 class Ground:
     def __init__(self,world,x,y):
         self.world = world
@@ -241,6 +264,7 @@ class World:
         self.block = []
         self.ground = []
         self.s_enemy = []
+        self.d_enemy = []
         self.enemy = []
         self.spike = []
         self.warp = []
@@ -322,6 +346,8 @@ class World:
         self.enemy.append(Enemy(self,start_x,end_x,y))
     def create_spike(self,x,y,angle):
         self.spike.append(Spike(self,x,y,angle))
+    def create_d_enemy(self,x,y,face):
+        self.d_enemy.append(D_Enemy(self,x,y,face))
     def set_current_directory(self,directory):
         self.directory = directory
     def player_pos(self,x,y):
@@ -400,6 +426,7 @@ class World:
     def load(self,directory):
         world_load.set_up(self,directory)
         self.directory = directory
+        self.d_enemy = []
     def update_ground(self,grass_top = True):
         grass_top = -1
         if grass_top:
