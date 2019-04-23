@@ -426,7 +426,8 @@ class World:
     def load(self,directory):
         world_load.set_up(self,directory)
         self.directory = directory
-        self.d_enemy = []
+        for d_enemy in self.d_enemy:
+            d_enemy.die()
     def update_ground(self,grass_top = True):
         grass_top = -1
         if grass_top:
