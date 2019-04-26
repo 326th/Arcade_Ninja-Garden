@@ -120,7 +120,7 @@ class Player:
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.x - (self.world.unit_size/2) < self.x < target.x + (self.world.unit_size/2)):
-                    if (self.y - ((self.world.unit_size/2)//1) < target.y < new_y + ((self.world.unit_size/2)//1)):
+                    if (self.y - ((self.world.unit_size/2)//1) < target.y < new_y ):
                        target.die()
             self.target_y = new_y - self.world.unit_size
             self.target_x = self.x
@@ -134,7 +134,7 @@ class Player:
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.x - (self.world.unit_size/2) < self.x < target.x + (self.world.unit_size/2)):
-                    if (self.y + ((self.world.unit_size/2)//1) > target.y > new_y - ((self.world.unit_size/2)//1)):
+                    if (self.y + ((self.world.unit_size/2)//1) > target.y > new_y ):
                        target.die()
             self.target_y = new_y + self.world.unit_size
             self.target_x = self.x
@@ -149,7 +149,7 @@ class Player:
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.y - (self.world.unit_size/2) < self.y < target.y + (self.world.unit_size/2)):
-                    if (self.x - ((self.world.unit_size/2)//1) < target.x < new_x + ((self.world.unit_size/2)//1)):
+                    if (self.x - ((self.world.unit_size/2)//1) < target.x < new_x ):
                        target.die()
             self.target_x = new_x - self.world.unit_size
             self.target_y = self.y
@@ -164,7 +164,7 @@ class Player:
             killable = self.world.enemy + self.world.s_enemy + self.world.block
             for target in killable:
                 if (target.y - (self.world.unit_size/2) < self.y < target.y + (self.world.unit_size/2)):
-                    if (self.x + ((self.world.unit_size/2)//1) > target.x > new_x - ((self.world.unit_size/2)//1)):
+                    if (self.x + ((self.world.unit_size/2)//1) > target.x > new_x ):
                        target.die()
             self.target_x = new_x + self.world.unit_size
             self.target_y = self.y
