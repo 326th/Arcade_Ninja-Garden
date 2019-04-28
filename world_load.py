@@ -44,4 +44,6 @@ def set_up(world,directory):
     world.ground_pos(ground_pos)
     world.block_pos(block_pos)
     world.spike_pos(spike_pos)
+    for ground in world.ground:
+        ground.image = 0
     world.update_ground()

@@ -10,6 +10,21 @@ SPIKE = ['images/spike/spike0000.png',
          'images/spike/spike0002.png',
          'images/spike/spike0003.png']
 
+SLASH_NINJA = ['images/ninja/slash_horizontal0000.png',
+               'images/ninja/slash_horizontal0001.png',
+               'images/ninja/slash_horizontal0002.png',
+               'images/ninja/slash_horizontal0003.png',
+               'images/ninja/slash_horizontal0004.png',
+               'images/ninja/slash_horizontal0005.png',
+               'images/ninja/slash_horizontal0006.png',
+               'images/ninja/slash_horizontal_flip0000.png',
+               'images/ninja/slash_horizontal_flip0001.png',
+               'images/ninja/slash_horizontal_flip0002.png',
+               'images/ninja/slash_horizontal_flip0003.png',
+               'images/ninja/slash_horizontal_flip0004.png',
+               'images/ninja/slash_horizontal_flip0005.png',
+               'images/ninja/slash_horizontal_flip0006.png']
+               
 STAND_NINJA = ['images/ninja/Idle0000.png',
                'images/ninja/Idle0001.png',
                'images/ninja/Idle0002.png',
@@ -103,6 +118,11 @@ class NinjaSprite:
         self.jump_cycle = 0
         self.fall_cycle = 0
     def draw(self,x,y):
+        if self.ninja.stop_charge >0:
+            self.ninja_sprite = arcade.Sprite(SLASH_NINJA[int(7-self.ninja.stop_charge/2)],scale = SCALE)
+            self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
+            self.ninja_sprite.draw()
+            return
         if self.ninja.vy > 0:
             self.right = int((self.ninja.right*int(len(JUMP_NINJA)))/2)
             self.ninja_sprite = arcade.Sprite(JUMP_NINJA[self.jump_cycle + self.right],scale = SCALE)

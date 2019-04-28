@@ -8,11 +8,13 @@ class Player:
     JUMP_SPEED = 12
     DASH_ACC = 1
     FRICTION = MAX_X/5
-    MAX_STOP_CHARGE = 5
+    MAX_STOP_CHARGE = 14
+    SLASH_CD = 25
     def __init__(self,world,x,y):
         self.jump_charge = 0
         self.stop_charge = 0
         self.dash_charge = 0
+        self.slash_cd = 0
         self.world = world
         self.x = x
         self.y = y
@@ -29,7 +31,6 @@ class Player:
         Player.MAX_Y = (Player.MAX_Y * self.world.scale)//1
         self.last_dir = 0
     def update(self,delta):
-        
         if self.stop_charge >0:
             if self.target_x != self.x:
                 self.x += (self.target_x - self.x)/self.stop_charge
@@ -45,9 +46,9 @@ class Player:
                     self.jump_charge = 2
                     self.dash_charge = 1
                     on_air = True
-        if on_air:
-            if self.jump_charge == 2:
-                    self.jump_charge = 1
+##        if on_air:
+##            if self.jump_charge == 2:
+##                    self.jump_charge = 1
         if self.world.hold_RIGHT and self.world.hold_LEFT:
             if self.last_dir == 1:
                 if self.vx >0:
@@ -104,9 +105,7 @@ class Player:
             self.jump_charge -= 1
             self.vy = Player.JUMP_SPEED
     def slash(self,direction):
-        if self.stop_charge >0:
-            return
-        if not self.dash_charge:
+        if self.slash_cd or self.stop_charge or not self.dash_charge:
             return
         self.dash_charge = 0
         DASH_RANGE = (4*self.world.unit_size) + 20
@@ -169,6 +168,7 @@ class Player:
             self.target_x = new_x + self.world.unit_size
             self.target_y = self.y
         self.stop_charge = Player.MAX_STOP_CHARGE
+        self.slash_cd = Player.SLASH_CD
         self.vx = 0
         self.vy = 0
     def die(self):
@@ -272,6 +272,9 @@ class World:
         self.hold_LEFT = False
         self.hold_RIGHT = False
     def update(self,delta):
+        if self.player.slash_cd > 0 and self.player.stop_charge == 0:
+            self.player.slash_cd -= 1
+            return
         self.player.update(delta)
         if self.player.stop_charge == 0:
             for enemy in self.enemy:
