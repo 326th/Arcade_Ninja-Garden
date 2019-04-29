@@ -119,7 +119,7 @@ class NinjaSprite:
         self.fall_cycle = 0
     def draw(self,x,y):
         if self.ninja.stop_charge >0:
-            self.ninja_sprite = arcade.Sprite(SLASH_NINJA[int(7-self.ninja.stop_charge/2)],scale = SCALE)
+            self.ninja_sprite = arcade.Sprite(SLASH_NINJA[int(((len(SLASH_NINJA)+1)/2)-self.ninja.stop_charge/2)-1],scale = SCALE)
             self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
             self.ninja_sprite.draw()
             return
