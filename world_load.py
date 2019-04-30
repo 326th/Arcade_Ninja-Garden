@@ -1,4 +1,27 @@
 def set_up(world,directory):
+    if directory == 'maps/boss.txt':
+        ground_pos = []
+        half_size = world.unit_size/2
+        lst = list(reversed(open(directory,'r').read().split('\n')))
+        lst[:] = [x for x in lst if x]
+        for objects in world.ground + world.block + world.enemy + world.spike + world.s_enemy + world.d_enemy + world.warp:
+            objects.die()
+        world.camera.displace = False
+        world.camera.displace_x,world.camera.displace_y  = 0,0
+        for string in range(len(lst)):
+            line = lst[string]
+            component = line.split(',')
+            component = list(map(lambda x:int((int(x)*world.unit_size) + half_size), component[1:5]))
+            if line[0:6] == 'player':
+                world.player_pos(component[0],component[1])
+            
+            y =  int(((string)*world.unit_size) + half_size)
+            for symbol in range(len(line)):
+                x =  int((symbol*world.unit_size) + half_size)
+                if line[symbol] == 'M':
+                    ground_pos.append([x,y])
+        world.ground_pos(ground_pos)
+        return
     enemy_pos = []
     s_enemy_pos = []
     ground_pos = []
@@ -44,6 +67,7 @@ def set_up(world,directory):
     world.ground_pos(ground_pos)
     world.block_pos(block_pos)
     world.spike_pos(spike_pos)
+    world.warp_pos(warp_pos)
     for ground in world.ground:
         ground.image = 0
     world.update_ground()

@@ -2,7 +2,8 @@ import arcade
 from camera import Camera
 SCALE = 1.5
 UNIT_SIZE = 32
-SCREEN_WIDTH = UNIT_SIZE * (25)
+SCREEN_WIDTH = 816
+
 SCREEN_HEIGHT = UNIT_SIZE * (19)
 
 SPIKE = ['images/spike/spike0000.png',
@@ -119,7 +120,8 @@ class NinjaSprite:
         self.fall_cycle = 0
     def draw(self,x,y):
         if self.ninja.stop_charge >0:
-            self.ninja_sprite = arcade.Sprite(SLASH_NINJA[int(((len(SLASH_NINJA)+1)/2)-self.ninja.stop_charge/2)-1],scale = SCALE)
+            self.right = int((self.ninja.right*int(len(SLASH_NINJA)))/2)
+            self.ninja_sprite = arcade.Sprite(SLASH_NINJA[int(((len(SLASH_NINJA)+1)/2)-self.ninja.stop_charge/2)-1+self.right],scale = SCALE)
             self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
             self.ninja_sprite.draw()
             return

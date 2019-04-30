@@ -99,6 +99,8 @@ class Player:
             self.right = 1
         self.detect_death()
     def jump(self):
+        if self.slash_cd or self.stop_charge or not self.dash_charge:
+            return
         if self.stop_charge >0:
             return
         if self.jump_charge > 0:
@@ -298,6 +300,13 @@ class World:
             self.player.slash([-1,0])
         if key == arcade.key.E:
             self.player.die()
+        if key == arcade.key.Q:
+            if self.camera.displace:
+                self.camera.displace = False
+            else:
+                self.camera.displace = True
+        if key == arcade.key.C:
+            print([self.player.x,self.player.y])
     def on_key_release(self,key,key_modifiers):
         if key == arcade.key.LEFT:
             self.hold_LEFT = False

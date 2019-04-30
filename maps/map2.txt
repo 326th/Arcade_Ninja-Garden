@@ -1,6 +1,7 @@
 
 player,1,6
 
+map,48,7,10,8,maps/boss.txt
 
 MMMMMMMMMM...........................M
 
@@ -10,30 +11,29 @@ MMMMMMMMMM...........................M
 
 MMMMMMMMMM...........................M
 
-MMMMMMMMMM...........................MMMMMM
+MMMMMMMMMM...........................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 
-MMMMMMMMMM...........................SSSSS
+MMMMMMMMMM...........................SSSS
 
-M....................................
+M
 
-M....................................
+M
 
-M....................................
+M
 
-M....................................
+M 
 
-M....................................WWWWW
+M....................................WWWW...................0
 
-M....................................MMMMMMMMMMMMMMMM
-
+M....................................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 
 MMMMMM...MMMMMM...............MMMMMMMM
 
-..............................MMMMMMMM
+.
 
-..............................MMMMMMMM
+.
 
-..............................MMMMMMMM
+.
 
 WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 
