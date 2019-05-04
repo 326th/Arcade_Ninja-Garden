@@ -1,6 +1,6 @@
 import model
 import map_reader
-START_DIRECTORY = 'maps/map1.txt'
+START_DIRECTORY = 'maps/test.txt'
 class Camera:
     def __init__(self,ninjawindow,unit_size,scale):
         self.ninjawindow = ninjawindow

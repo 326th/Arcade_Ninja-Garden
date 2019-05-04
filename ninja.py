@@ -1,4 +1,4 @@
-import arcade
+import arcade, boss
 from camera import Camera
 SCALE = 1.5
 UNIT_SIZE = 32
@@ -289,18 +289,23 @@ class NinjaWindow(arcade.Window):
         self.block = BlockSprite(self)
         self.ninja = NinjaSprite(self)
         self.d_enemy = D_Enemy(self)
+        self.boss = boss.Boss(self.camera.world)
     def on_key_press(self,key,key_modifiers):
         self.camera.on_key_press(key,key_modifiers)
     def on_key_release(self,key,key_modifiers):
         self.camera.on_key_release(key,key_modifiers)
     def update(self, delta):
         self.camera.update(delta)
+        if not self.camera.displace:
+            self.boss.update()
         self.ninja.update()
         self.s_enemy.update()
         self.enemy.update()
         self.d_enemy.update()
     def on_draw(self):
         arcade.start_render()
+        if not self.camera.displace:
+            self.boss.draw()
         self.camera.get_positon_displace()
         x,y = self.camera.displace_x,self.camera.displace_y
         self.block.draw(x,y)

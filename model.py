@@ -38,17 +38,7 @@ class Player:
                 self.y += (self.target_y - self.y)/self.stop_charge
             self.stop_charge -= 1
             return
-        on_air = False
-        g_spike = self.world.get_ground_at_player_same_x()
-        for g in self.world.ground + self.world.block:
-            if self.y == g.y + self.world.unit_size:
-                if g.x - self.world.unit_size/2 < self.x <g.x + self.world.unit_size/2: 
-                    self.jump_charge = 2
-                    self.dash_charge = 1
-                    on_air = True
-##        if on_air:
-##            if self.jump_charge == 2:
-##                    self.jump_charge = 1
+
         if self.world.hold_RIGHT and self.world.hold_LEFT:
             if self.last_dir == 1:
                 if self.vx >0:
@@ -97,6 +87,17 @@ class Player:
             self.right = 0
         if self.vx<0:
             self.right = 1
+        on_air = False
+        g_spike = self.world.get_ground_at_player_same_x()
+        for g in self.world.ground + self.world.block:
+            if self.y == g.y + self.world.unit_size:
+                if g.x - self.world.unit_size/2 < self.x <g.x + self.world.unit_size/2: 
+                    self.jump_charge = 2
+                    self.dash_charge = 1
+                    on_air = True
+##        if on_air:
+##            if self.jump_charge == 2:
+##                    self.jump_charge = 1
         self.detect_death()
     def jump(self):
         if self.slash_cd or self.stop_charge or not self.dash_charge:
@@ -290,6 +291,8 @@ class World:
             self.hold_RIGHT = True
         if key == arcade.key.UP:
             self.player.jump()
+            if self.player.jump_charge > 1:
+                self.player.jump_charge = 1
         if key == arcade.key.W:
             self.player.slash([0,1])
         if key == arcade.key.S:
