@@ -59,7 +59,7 @@ class Boss:
     def __init__(self,world):
         self.body = 0
         self.world = world
-        self.timer = 100
+        self.survive = 100
         self.top_angle = 0
         self.cycle = 0
         self.top = arcade.Sprite('images/boss/boss_top.png')
@@ -72,6 +72,10 @@ class Boss:
         self.spike_y = 0
         self.spike_ho_left = 0
         self.spike_ho_right = 0
+        self.enemy_delay = 0
+        self.enemy_x = 0
+        self.enemy_timer = 0
+        self.warn = arcade.Sprite('images/boss/warning.png',scale = 1.5)
     def draw(self):
         self.body = arcade.Sprite(BOSS_BODY[self.cycle%5])
         self.left = arcade.Sprite(BOSS_LEFT[self.cycle%10])
@@ -102,25 +106,34 @@ class Boss:
         self.left.draw()
         self.right.draw()
         self.top.draw()
+        arcade.draw_text(f'Time:{math.ceil(self.survive)}',68,580,arcade.color.BLACK,20)
         if self.spike_ver > 0:
             self.down.draw()
-            self.warn = arcade.Sprite('images/boss/warning.png',scale = 1.5)
             for y in warn_pos_ver:
                 self.warn.set_position(self.spike_x,y)
                 self.warn.draw()
         if self.spike_ho_left > 0:
             self.left.draw()
-            self.warn = arcade.Sprite('images/boss/warning.png',scale = 1.5)
             for x in warn_pos_ho:
                 self.warn.set_position(x,self.spike_y)
                 self.warn.draw()
         if self.spike_ho_right > 0:
             self.right.draw()
-            self.warn = arcade.Sprite('images/boss/warning.png',scale = 1.5)
             for x in warn_pos_ho:
                 self.warn.set_position(x,self.spike_y)
                 self.warn.draw()
+        if self.enemy_delay > 0:
+            self.warn.set_position(self.enemy_x,72)
+            self.warn.draw()
     def update(self):
+        if self.enemy_delay > 0:
+            self.enemy_delay -=1
+            if self.enemy_delay == 0:
+                self.world.create_s_enemy(self.enemy_x,72)
+        self.enemy_timer += 1
+        if self.enemy_timer == 16:
+            self.enemy_timer = 0
+            self.spawn()
         if self.spike_ver > 0:
             self.tracking_x()
             self.spike_ver -= 1
@@ -142,6 +155,7 @@ class Boss:
             if self.right_attack > 0:
                 self.right_attack -= 1
         if self.timer == 10:
+            self.survive -= 0.5
             self.timer = 0
             self.cycle += 1
             if self.cycle%5 == 4:
@@ -167,7 +181,7 @@ class Boss:
                     self.spike_ho_right = 59
                     self.spike_y = self.world.player.y
     def random_attack_down(self):
-        if random.randint(0,5) == 0:
+        if random.randint(0,4) == 0:
             if self.down_attack == 0 and self.spike_ver == 0:
                 self.down_attack = 7
     def tracking_x(self):
@@ -175,17 +189,24 @@ class Boss:
             return
         self.spike_x += int((self.world.player.x-self.spike_x)/abs(self.world.player.x-self.spike_x)*2)
     def random_attack_left(self):
-        if random.randint(0,2) == 0:
+        if random.randint(0,6) == 0:
             if self.left_attack == 0 and self.spike_ho_left == 0 and self.spike_ho_right == 0 and self.right_attack == 0:
                 self.left_attack = 7
     def random_attack_right(self):
-        if random.randint(0,5) == 0:
+        if random.randint(0,6) == 0:
             if self.left_attack == 0 and self.spike_ho_right == 0 and self.spike_ho_left == 0 and self.right_attack == 0:
                 self.right_attack = 7
     def tracking_y(self):
         if self.spike_y == self.world.player.y:
             return
         self.spike_y += int((self.world.player.y-self.spike_y)/abs(self.world.player.y-self.spike_y)*2)    
-##    def spawn(self):
+    def spawn(self):
+        if len(self.world.s_enemy) < 1 and self.enemy_delay == 0:
+
+            if random.randint(0,9) == 0:
+                self.enemy_delay = 60
+                self.enemy_x = random.randint(72,528)
 ##    def hurts(self,damage):
 ##    def die(self):
+##        if self.survive == 0:
+##            dead animation

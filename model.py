@@ -1,5 +1,6 @@
 import arcade.key
 import world_load
+import boss
 from collision_detection import new_pos_x, new_pos_y
 class Player:
     MAX_X = 6
@@ -176,6 +177,7 @@ class Player:
         self.vy = 0
     def die(self):
         self.world.load(self.world.directory)
+        self.world.camera.ninjawindow.boss = boss.Boss(self.world)
     def detect_death(self):
         all_enemy = self.world.enemy + self.world.s_enemy
         for enemy in all_enemy:
