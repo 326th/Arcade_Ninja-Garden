@@ -55,6 +55,32 @@ LEFT_SPIKE = ['images/boss/boss_left_spike6.png',
              'images/boss/boss_left_spike3.png',
              'images/boss/boss_left_spike2.png',
              'images/boss/boss_left_spike1.png']
+SMOKE = ['images/Explosion/Smoke0000.png',
+         'images/Explosion/Smoke0001.png',
+         'images/Explosion/Smoke0002.png',
+         'images/Explosion/Smoke0003.png',
+         'images/Explosion/Smoke0004.png',
+         'images/Explosion/Smoke0005.png',
+         'images/Explosion/Smoke0006.png',
+         'images/Explosion/Smoke0007.png',
+         'images/Explosion/Smoke0008.png']
+class Smoke:
+    def __init__(self,x,y,boss):
+        self.x = x
+        self.y = y
+        self.boss = boss
+        self.timer = 0
+    def update(self):
+        self.timer += 1
+        if self.timer == 15:
+            self.die()
+    def draw(self):
+        pic = arcade.Sprite(SMOKE[int((self.timer -1)/2)])
+        pic.set_position(self.x,self.y)
+        pic.draw()
+    def die(self):
+        self.boss.smoke.remove(self)
+        
 class Boss:
     def __init__(self,world):
         self.body = 0
@@ -78,6 +104,9 @@ class Boss:
         self.warn = arcade.Sprite('images/boss/warning.png',scale = 1.5)
         self.dmg_time = 0
         self.dmg = 0
+        self.dead = False
+        self.dead_timer = 0
+        self.smoke = []
     def attack(self):
         if self.spike_ver//10 == 0 and self.spike_ver >0:
             if self.spike_x-24 < self.world.player.x < self.spike_x +24:
@@ -122,10 +151,13 @@ class Boss:
         self.left.draw()
         self.right.draw()
         self.top.draw()
-        if self.dmg_time == 0:
-            arcade.draw_text(f'Time:{math.ceil(self.survive)}',68,580,arcade.color.BLACK,20)
+        if self.survive <= 0:
+            arcade.draw_text('Time:0',68,580,arcade.color.BLACK,20)
         else:
-            arcade.draw_text(f'Time:{math.ceil(self.survive)} - {self.dmg}',68,580,arcade.color.BLACK,20)
+            if self.dmg_time == 0:
+                arcade.draw_text(f'Time:{math.ceil(self.survive)}',68,580,arcade.color.BLACK,20)
+            else:
+                arcade.draw_text(f'Time:{math.ceil(self.survive)} - {self.dmg}',68,580,arcade.color.BLACK,20)
         if self.spike_ver > 0:
             self.down.draw()
             for y in warn_pos_ver:
@@ -144,7 +176,16 @@ class Boss:
         if self.enemy_delay > 0:
             self.warn.set_position(self.enemy_x,72)
             self.warn.draw()
+        for smoke in self.smoke:
+            smoke.draw()
     def update(self):
+        for smoke in self.smoke:
+            smoke.update()
+        if self.survive <= 0:
+            if not self.dead:
+                self.dead = True
+                self.dead_timer = 40
+            self.die()
         if self.dmg_time >0:
             self.dmg_time -= 1
             if self.dmg_time == 0:
@@ -234,6 +275,10 @@ class Boss:
     def hurts(self,damage):
         self.dmg = damage
         self.dmg_time = 60
-##    def die(self):
-##        if self.survive == 0:
-##            dead animation
+    def die(self):
+        if self.dead_timer > 0:
+            self.dead_timer -= 1
+            if self.dead_timer%2 == 0:
+                self.add_smoke(random.randint(96,504),random.randint(96,504))
+    def add_smoke(self,x,y):
+        self.smoke.append(Smoke(x,y,self))
