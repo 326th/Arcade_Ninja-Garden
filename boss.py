@@ -76,6 +76,18 @@ class Boss:
         self.enemy_x = 0
         self.enemy_timer = 0
         self.warn = arcade.Sprite('images/boss/warning.png',scale = 1.5)
+        self.dmg_time = 0
+        self.dmg = 0
+    def attack(self):
+        if self.spike_ver//10 == 0 and self.spike_ver >0:
+            if self.spike_x-24 < self.world.player.x < self.spike_x +24:
+                self.world.player.die()
+        if self.spike_ho_left//10 == 0 and self.spike_ho_left >0:
+            if self.spike_y-24 < self.world.player.y < self.spike_y +24:
+                self.world.player.die()
+        if self.spike_ho_right//10 == 0 and self.spike_ho_right >0:
+            if self.spike_y-24 < self.world.player.y < self.spike_y +24:
+                self.world.player.die()
     def draw(self):
         self.body = arcade.Sprite(BOSS_BODY[self.cycle%5])
         self.left = arcade.Sprite(BOSS_LEFT[self.cycle%10])
@@ -91,7 +103,11 @@ class Boss:
             self.right = arcade.Sprite(RIGHT_SPIKE[(self.spike_ho_right//10)])
         self.body.set_position(MID_X,MID_Y)
         self.left.set_position(MID_X,MID_Y)
+        if self.left_attack > 0:
+            self.left.set_position(MID_X-math.ceil(self.left_attack*200/7),MID_Y)
         self.right.set_position(MID_X,MID_Y)
+        if self.right_attack > 0:
+            self.right.set_position(MID_X+math.ceil(self.right_attack*200/7),MID_Y)
         self.down.set_position(MID_X,MID_Y)
         if self.spike_ver > 0:
             self.down.set_position(self.spike_x,MID_Y+ 48)
@@ -106,7 +122,10 @@ class Boss:
         self.left.draw()
         self.right.draw()
         self.top.draw()
-        arcade.draw_text(f'Time:{math.ceil(self.survive)}',68,580,arcade.color.BLACK,20)
+        if self.dmg_time == 0:
+            arcade.draw_text(f'Time:{math.ceil(self.survive)}',68,580,arcade.color.BLACK,20)
+        else:
+            arcade.draw_text(f'Time:{math.ceil(self.survive)} - {self.dmg}',68,580,arcade.color.BLACK,20)
         if self.spike_ver > 0:
             self.down.draw()
             for y in warn_pos_ver:
@@ -126,6 +145,11 @@ class Boss:
             self.warn.set_position(self.enemy_x,72)
             self.warn.draw()
     def update(self):
+        if self.dmg_time >0:
+            self.dmg_time -= 1
+            if self.dmg_time == 0:
+                self.survive -= self.dmg
+                self.dmg = 0
         if self.enemy_delay > 0:
             self.enemy_delay -=1
             if self.enemy_delay == 0:
@@ -180,6 +204,7 @@ class Boss:
                 if self.right_attack in [1,2]:
                     self.spike_ho_right = 59
                     self.spike_y = self.world.player.y
+        self.attack()
     def random_attack_down(self):
         if random.randint(0,4) == 0:
             if self.down_attack == 0 and self.spike_ver == 0:
@@ -206,7 +231,9 @@ class Boss:
             if random.randint(0,9) == 0:
                 self.enemy_delay = 60
                 self.enemy_x = random.randint(72,528)
-##    def hurts(self,damage):
+    def hurts(self,damage):
+        self.dmg = damage
+        self.dmg_time = 60
 ##    def die(self):
 ##        if self.survive == 0:
 ##            dead animation

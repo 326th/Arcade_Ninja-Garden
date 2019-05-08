@@ -197,6 +197,8 @@ class S_Enemy:
     def die(self):
         self.world.create_d_enemy(self.x,self.y,1)
         self.world.s_enemy.remove(self)
+        if not self.world.camera.displace:
+            self.world.camera.ninjawindow.boss.hurts(5)
 class Enemy:
     MOVE_SPEED = 3
     def __init__(self,world,start_x,end_x,y):
