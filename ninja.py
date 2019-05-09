@@ -1,4 +1,4 @@
-import arcade, boss
+import arcade, boss,gui
 from camera import Camera
 SCALE = 1.5
 UNIT_SIZE = 32
@@ -104,7 +104,33 @@ DEAD_ENEMY = ['images/d_enemy/d_enemy0000.png',
                'images/d_enemy/d_enemy_flip0006.png',
                'images/d_enemy/d_enemy_flip0007.png',
                'images/d_enemy/d_enemy_flip0008.png']
-#load sprite
+SMOKE = ['images/Explosion/Smoke0000.png',
+         'images/Explosion/Smoke0001.png',
+         'images/Explosion/Smoke0002.png',
+         'images/Explosion/Smoke0003.png',
+         'images/Explosion/Smoke0004.png',
+         'images/Explosion/Smoke0005.png',
+         'images/Explosion/Smoke0006.png',
+         'images/Explosion/Smoke0007.png',
+         'images/Explosion/Smoke0008.png'] 
+class Smoke:
+    def __init__(self,x,y,world):
+        self.x = x
+        self.y = y
+        self.world = world
+        self.timer = 0
+    def update(self):
+        self.timer += 1
+        if self.timer == 15:
+            self.die()
+    def draw(self):
+        pic = arcade.Sprite(SMOKE[int((self.timer -1)/2)],scale = 2.5)
+        pic.set_position(self.x,self.y)
+        pic.draw()
+    def die(self):
+        self.world.camera.ninjawindow.dead_smoke.remove(self)
+        self.world.load(self.world.directory)
+        self.world.camera.ninjawindow.boss = boss.Boss(self.world)
 class NinjaSprite:
     DELAY = 6
     RUN_DELAY = 4
@@ -147,7 +173,6 @@ class NinjaSprite:
         self.ninja_sprite = arcade.Sprite(STAND_NINJA[self.cycle + self.right],scale = SCALE)
         self.ninja_sprite.set_position(self.ninja.x+x,self.ninja.y+y)
         self.ninja_sprite.draw()
-
     def update(self):
         if self.ninja.stop_charge > 0:
             return
@@ -177,7 +202,7 @@ class NinjaSprite:
                 self.fall_cycle += 1
             else:
                 self.fall_cycle = 0
-        
+    
 class BlockSprite:
     def __init__(self,game):
         self.block = game.camera.world.block
@@ -290,11 +315,18 @@ class NinjaWindow(arcade.Window):
         self.ninja = NinjaSprite(self)
         self.d_enemy = D_Enemy(self)
         self.boss = boss.Boss(self.camera.world)
+        self.dead_smoke = []
+        self.lives=5
     def on_key_press(self,key,key_modifiers):
         self.camera.on_key_press(key,key_modifiers)
     def on_key_release(self,key,key_modifiers):
         self.camera.on_key_release(key,key_modifiers)
     def update(self, delta):
+        if self.lives == 0:
+            return
+        if len(self.dead_smoke) > 0:
+            self.dead_smoke[0].update()
+            return
         self.camera.update(delta)
         if not self.camera.displace:
             self.boss.update()
@@ -311,8 +343,16 @@ class NinjaWindow(arcade.Window):
         self.block.draw(x,y)
         self.s_enemy.draw(x,y)
         self.enemy.draw(x,y)
-        self.ninja.draw(x,y)
+        if len(self.dead_smoke) == 0:
+            self.ninja.draw(x,y)
+        for smoke in self.dead_smoke:   
+            smoke.draw()
         self.d_enemy.draw(x,y)
+        gui.draw(self.lives,False)
+    def add_smoke(self,x,y,world):
+        self.camera.get_positon_displace()
+        x1,y1 = self.camera.displace_x,self.camera.displace_y
+        self.dead_smoke.append(Smoke(x+x1,y+y1,world))
     
         
 def main():

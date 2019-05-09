@@ -75,7 +75,7 @@ class Smoke:
         if self.timer == 15:
             self.die()
     def draw(self):
-        pic = arcade.Sprite(SMOKE[int((self.timer -1)/2)])
+        pic = arcade.Sprite(SMOKE[int((self.timer -1)/2)],scale = 2.5)
         pic.set_position(self.x,self.y)
         pic.draw()
     def die(self):
@@ -178,14 +178,29 @@ class Boss:
             self.warn.draw()
         for smoke in self.smoke:
             smoke.draw()
+        if self.dead:
+            arcade.draw_text('you win',204,MID_Y,arcade.color.PURPLE,100)
     def update(self):
         for smoke in self.smoke:
             smoke.update()
         if self.survive <= 0:
             if not self.dead:
                 self.dead = True
-                self.dead_timer = 40
+                self.dead_timer = 0
+                self.down_attack = 0
+                self.spike_x = 0
+                self.spike_ver = 0
+                self.left_attack = 0
+                self.right_attack = 0
+                self.spike_y = 0
+                self.spike_ho_left = 0
+                self.spike_ho_right = 0
+                self.enemy_delay = 0
+                self.enemy_x = 0
+                self.enemy_timer = 0
             self.die()
+        if self.dead:
+            return
         if self.dmg_time >0:
             self.dmg_time -= 1
             if self.dmg_time == 0:
@@ -276,9 +291,8 @@ class Boss:
         self.dmg = damage
         self.dmg_time = 60
     def die(self):
-        if self.dead_timer > 0:
-            self.dead_timer -= 1
-            if self.dead_timer%2 == 0:
-                self.add_smoke(random.randint(96,504),random.randint(96,504))
+        self.dead_timer += 1
+        if self.dead_timer%2 == 0:
+            self.add_smoke(random.randint(96,720),random.randint(96,504))
     def add_smoke(self,x,y):
         self.smoke.append(Smoke(x,y,self))

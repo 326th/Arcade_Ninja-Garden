@@ -96,9 +96,6 @@ class Player:
                     self.jump_charge = 2
                     self.dash_charge = 1
                     on_air = True
-##        if on_air:
-##            if self.jump_charge == 2:
-##                    self.jump_charge = 1
         self.detect_death()
     def jump(self):
         if self.slash_cd or self.stop_charge or not self.dash_charge:
@@ -176,8 +173,10 @@ class Player:
         self.vx = 0
         self.vy = 0
     def die(self):
-        self.world.load(self.world.directory)
-        self.world.camera.ninjawindow.boss = boss.Boss(self.world)
+        if len(self.world.camera.ninjawindow.dead_smoke) > 0:
+            return
+        self.world.camera.ninjawindow.add_smoke(self.x,self.y,self.world)
+        self.world.camera.ninjawindow.lives -= 1
     def detect_death(self):
         all_enemy = self.world.enemy + self.world.s_enemy
         for enemy in all_enemy:
