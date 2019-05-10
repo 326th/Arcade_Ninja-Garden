@@ -304,13 +304,13 @@ class World:
             self.player.slash([1,0])
         if key == arcade.key.A:
             self.player.slash([-1,0])
-        if key == arcade.key.E:
-            self.player.die()
-        if key == arcade.key.Q:
-            if self.camera.displace:
-                self.camera.displace = False
-            else:
-                self.camera.displace = True
+##        if key == arcade.key.E:
+##            self.player.die()
+##        if key == arcade.key.Q:
+##            if self.camera.displace:
+##                self.camera.displace = False
+##            else:
+##                self.camera.displace = True
         if key == arcade.key.C:
             print([self.player.x,self.player.y])
     def on_key_release(self,key,key_modifiers):
